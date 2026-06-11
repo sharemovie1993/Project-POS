@@ -1,0 +1,131 @@
+/* ==================== RESPONSIVE LAYOUT FOR TABLETS, IPADS & PHONES ==================== */
+
+@media (max-width: 1024px) {
+  /* Collapse Sidebar to Compact Icon-Only Mode */
+  .app-sidebar {
+    width: 70px;
+  }
+  
+  .sidebar-brand {
+    padding: 16px 8px;
+    justify-content: center;
+  }
+  
+  .sidebar-brand .brand-text,
+  .menu-item span,
+  .sidebar-footer .theme-toggle span {
+    display: none;
+  }
+  
+  .sidebar-menu {
+    padding: 24px 8px;
+    align-items: center;
+  }
+  
+  .menu-item {
+    padding: 12px;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+  }
+  
+  .menu-item i {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .sidebar-footer {
+    padding: 16px 8px;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .theme-toggle {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    justify-content: center;
+    border: none;
+  }
+  
+  /* Adjust Main Content Offset */
+  .app-content {
+    margin-left: 70px;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 992px) {
+  /* Stack POS Grid Vertically on Tablets/Portrait */
+  .pos-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .pos-sidebar {
+    width: 100%;
+  }
+  
+  .summary-card {
+    width: 100%;
+  }
+
+  /* Make sure table wrapper handles horizontal overflow on tablets */
+  .cart-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .cart-table {
+    min-width: 600px; /* Force scrollable area instead of squishing columns */
+  }
+
+  /* Dashboard Metrics Grid to 2 columns */
+  .metrics-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Further optimizations for smaller devices */
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .header-clock {
+    align-self: flex-start;
+  }
+  
+  .pos-search-panel {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .pos-search-panel button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .report-two-columns {
+    flex-direction: column;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .pos-revenue-bar {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 576px) {
+  .pos-revenue-bar {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}

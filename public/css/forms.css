@@ -1,0 +1,110 @@
+/* Forms & Input Component Styles */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.flex-1 { flex: 1; }
+.flex-2 { flex: 2; }
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+input[type="number"],
+input[type="text"],
+input[type="date"],
+input[type="password"],
+select,
+textarea {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 14px;
+  outline: none;
+  font-size: 14px;
+  transition: all var(--transition-fast);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+/* Premium Date Input Styling */
+input[type="date"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  min-height: 42px;
+  cursor: pointer;
+  color-scheme: light dark;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  border-radius: 4px;
+  padding: 4px;
+  opacity: 0.6;
+  transition: opacity var(--transition-fast);
+  filter: var(--calendar-icon-filter, none);
+}
+
+input[type="date"]:hover::-webkit-calendar-picker-indicator {
+  opacity: 1;
+}
+
+/* Premium Password Input Styling */
+input[type="password"] {
+  letter-spacing: 2px;
+  font-family: inherit;
+}
+
+input[type="password"]::placeholder {
+  letter-spacing: normal;
+  font-family: inherit;
+}
+
+.input-lg {
+  font-size: 18px;
+  font-weight: 700;
+  padding: 14px;
+  font-family: 'JetBrains Mono', monospace;
+  text-align: right;
+  color: var(--color-primary);
+}
+
+/* CRUD Input field layout */
+.products-header-actions {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.input-with-action {
+  display: flex;
+  gap: 8px;
+}
+
+.input-with-action input {
+  flex-grow: 1;
+}
+
+.profit-estimate-box {
+  background-color: var(--bg-app);
+  border: 1px solid var(--border-color);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  margin-top: 14px;
+}

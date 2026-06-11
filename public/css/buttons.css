@@ -1,0 +1,112 @@
+/* Buttons System */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-xs {
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-sm {
+  font-size: 13px;
+  padding: 8px 16px;
+}
+
+.btn-lg {
+  font-size: 16px;
+  padding: 14px 24px;
+  border-radius: var(--radius-lg);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-icon-only {
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+/* Button Variants */
+.btn-primary {
+  background: var(--primary-grad);
+  color: var(--text-inverse);
+  box-shadow: 0 4px 12px rgba(var(--shadow-glow-color), 0.25);
+}
+
+.btn-primary:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(var(--shadow-glow-color), 0.35);
+}
+
+.btn-primary-light {
+  background-color: var(--color-primary-glow);
+  color: var(--color-primary);
+  border-color: transparent;
+}
+
+.btn-primary-light:hover {
+  background-color: var(--color-primary);
+  color: var(--text-inverse);
+}
+
+.btn-secondary {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+.btn-secondary:hover {
+  background-color: var(--bg-input);
+  border-color: var(--color-primary);
+}
+
+.btn-secondary-light {
+  background-color: var(--border-color);
+  color: var(--text-main);
+}
+
+.btn-secondary-light:hover {
+  background-color: var(--bg-input);
+}
+
+.btn-secondary-glow {
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-main);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary-glow:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-glow);
+  color: var(--color-primary);
+}
+
+.btn-danger {
+  background: var(--danger-grad);
+  color: var(--text-inverse);
+}
+
+.btn-danger:hover {
+  opacity: 0.95;
+}

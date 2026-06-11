@@ -1,0 +1,182 @@
+/* ==================== PRINT MEDIA STYLES (@media print) ==================== */
+@media print {
+  /* Sembunyikan elemen dekoratif dan navigasi secara default saat mencetak */
+  #appSidebar,
+  .app-header,
+  .toast-container,
+  .btn,
+  button,
+  .theme-toggle,
+  .modal-header,
+  .modal-footer {
+    display: none !important;
+  }
+
+  /* Reset body agar berlatar putih bersih dan terlihat oleh browser */
+  body, html {
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* ==================== CETAK STRUK BELANJA (58mm Thermal Printer) ==================== */
+  body.printing-receipt .app-container {
+    display: none !important;
+  }
+  
+  body.printing-receipt .modal-backdrop:not(#receiptPreviewModal) {
+    display: none !important;
+  }
+
+  body.printing-receipt #receiptPreviewModal {
+    display: block !important;
+    position: static !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
+
+  body.printing-receipt #receiptPreviewModal .modal-card {
+    display: block !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
+
+  body.printing-receipt #receiptPreviewModal .modal-body {
+    padding: 0 !important;
+  }
+  
+  body.printing-receipt .thermal-receipt {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    width: 58mm !important; /* Standar struk thermal kasir */
+    margin: 0 auto !important;
+    color: #000000 !important;
+    background: #ffffff !important;
+  }
+
+  /* ==================== CETAK LAPORAN (Kertas A4 / PDF) ==================== */
+  body.printing-report .app-container {
+    display: block !important;
+  }
+
+  body.printing-report .app-sidebar {
+    display: none !important;
+  }
+
+  body.printing-report .app-content {
+    margin-left: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.printing-report .screen-section {
+    display: none !important;
+  }
+
+  body.printing-report #screenReports {
+    display: block !important;
+  }
+
+  /* Sembunyikan navigasi sub-tab, filter tanggal, metrics kotor, dan tombol backup/kosongkan database */
+  body.printing-report .sub-tabs,
+  body.printing-report .finance-filter-card,
+  body.printing-report .header-clock,
+  body.printing-report .metrics-grid,
+  body.printing-report .bg-card-panel,
+  body.printing-report .products-header-actions {
+    display: none !important;
+  }
+
+  /* Filter tampilan detail laporan berdasarkan tipe cetakan */
+  body.print-today-items #reportTodayTransactionsCard {
+    display: none !important;
+  }
+  body.print-today-transactions #reportTodayItemsCard {
+    display: none !important;
+  }
+  body.print-finance-summary #reportFinanceStatsCol {
+    display: none !important;
+  }
+
+  /* Atur agar tabel yang dicetak melebar penuh (A4 Portrait/Landscape) */
+  body.printing-report .report-two-columns {
+    display: block !important;
+  }
+
+  body.printing-report .table-card {
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin-bottom: 20px !important;
+  }
+
+  body.printing-report .data-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  
+  body.printing-report .data-table th {
+    background-color: #f1f5f9 !important;
+    color: #000000 !important;
+    border-bottom: 2px solid #000000 !important;
+    padding: 10px 8px !important;
+  }
+  
+  body.printing-report .data-table td {
+    border-bottom: 1px solid #e2e8f0 !important;
+    color: #000000 !important;
+    padding: 10px 8px !important;
+  }
+
+  /* Print Header Styles */
+  .print-only-report-header {
+    display: block !important;
+    margin-bottom: 24px;
+  }
+  .print-header-content {
+    display: flex !important;
+    align-items: center !important;
+    gap: 16px !important;
+  }
+  #reportPrintLogoContainer img {
+    max-height: 50px !important;
+    max-width: 120px !important;
+    object-fit: contain !important;
+  }
+  .print-header-text h1 {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    margin: 0 !important;
+    color: #000000 !important;
+  }
+  .print-header-text p {
+    font-size: 11px !important;
+    color: #334155 !important;
+    margin: 2px 0 0 0 !important;
+  }
+  .print-header-divider {
+    height: 2px !important;
+    background-color: #000000 !important;
+    margin-top: 12px !important;
+  }
+}
+
+.print-only-report-header {
+  display: none;
+}

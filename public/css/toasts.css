@@ -1,0 +1,47 @@
+/* Toast Messages Notification system */
+.toast-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10000;
+}
+
+.toast {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 280px;
+  max-width: 400px;
+  animation: slideInRight var(--transition-normal);
+  border-left: 4px solid var(--color-primary);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.toast.toast-success { border-left-color: var(--color-success); }
+.toast.toast-danger { border-left-color: var(--color-danger); }
+.toast.toast-warning { border-left-color: var(--color-warning); }
+
+.toast-icon {
+  flex-shrink: 0;
+}
+
+.toast.toast-success .toast-icon { color: var(--color-success); }
+.toast.toast-danger .toast-icon { color: var(--color-danger); }
+.toast.toast-warning .toast-icon { color: var(--color-warning); }
+
+.toast-message {
+  font-size: 13px;
+  font-weight: 500;
+}
