@@ -7,6 +7,9 @@
 kasir.db
 kasir_dev.db
 *.db
+*.db-journal
+*.db-shm
+*.db-wal
 
 # Node modules
 node_modules/

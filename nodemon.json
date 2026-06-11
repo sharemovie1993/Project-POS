@@ -1,5 +1,5 @@
 {
-  "watch": ["server.js", "public/", "config-mikrotik.json"],
+  "watch": ["server.js", "public/", "config-mikrotik.json", "routes/", "db/", "utils/"],
   "ignore": ["kasir*.db", "node_modules/", "*.log"],
   "ext": "js,json,html,css",
   "delay": 500,
