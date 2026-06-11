@@ -1,0 +1,7 @@
+{
+  "host": "10.10.10.254",
+  "port": 8728,
+  "user": "admin",
+  "password": "password123",
+  "owner": "Organisasi"
+}
