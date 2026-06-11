@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # =================================================================
-# 🚀 KASIRKU POS DEPLOYMENT SCRIPT FOR LINUX (DEBIAN/UBUNTU)
+# 🚀 KASIRKU POS DEPLOYMENT & PROXY WIZARD FOR LINUX
 # =================================================================
-# Script ini mengotomatiskan instalasi Node.js, PM2, konfigurasi env,
-# serta manajemen proses server agar mudah digunakan di VPS.
+# Script terpadu (satu pintu) untuk mengotomatiskan setup:
+# 1. PC Lokal Toko (Node.js, PM2, Database, Runner)
+# 2. VPS Reverse Proxy (Nginx Server Block & SSL Certbot)
 # =================================================================
 
 # Warna untuk output
@@ -25,10 +26,10 @@ fi
 
 show_banner() {
     echo -e "${CYAN}=================================================================${NC}"
-    echo -e "${CYAN}             🚀 KASIRKU POS DEPLOYMENT WIZARD 🚀                 ${NC}"
+    echo -e "${CYAN}         🚀 KASIRKU POS SYSTEM - DEPLOY & PROXY WIZARD 🚀        ${NC}"
     echo -e "${CYAN}=================================================================${NC}"
-    echo -e "Aplikasi akan dijalankan menggunakan PM2 agar berjalan di background."
-    echo -e "Status Server saat ini: "
+    echo -e "Fungsi lokal PC Kasir (PM2) & VPS Reverse Proxy (Nginx) dalam satu script."
+    echo -e "Status Server Kasir Lokal saat ini: "
     if command -v pm2 &> /dev/null && pm2 describe project-pos &> /dev/null; then
         echo -e "● PM2 Status: ${GREEN}Running / Configured${NC}"
     else
@@ -38,15 +39,15 @@ show_banner() {
 }
 
 install_dependencies() {
-    echo -e "\n${YELLOW}[1/4] Memulai Instalasi Dependensi Sistem...${NC}"
+    echo -e "\n${YELLOW}[1/5] Memulai Instalasi Dependensi Sistem...${NC}"
     
     # Update package list
     echo -e "${CYAN}Mengupdate daftar paket sistem (apt update)...${NC}"
     sudo apt-get update -y
     
-    # Install Git & Curl & Build tools
-    echo -e "${CYAN}Menginstall git, curl, build-essential, dan sqlite3...${NC}"
-    sudo apt-get install -y git curl build-essential sqlite3
+    # Install Git & Curl & Build tools & SQLite3 & Nginx
+    echo -e "${CYAN}Menginstall git, curl, build-essential, sqlite3, dan nginx...${NC}"
+    sudo apt-get install -y git curl build-essential sqlite3 nginx
     
     # Install Node.js (NodeSource LTS 20) jika belum terpasang atau versi terlalu lama
     if ! command -v node &> /dev/null; then
@@ -67,15 +68,19 @@ install_dependencies() {
     fi
 
     # Install dependencies project (production only)
-    echo -e "${CYAN}Menginstall NPM dependencies untuk project...${NC}"
-    npm install --production
+    if [ -f package.json ]; then
+        echo -e "${CYAN}Menginstall NPM dependencies untuk project...${NC}"
+        npm install --production
+    else
+        echo -e "${YELLOW}[Info] package.json tidak ditemukan di folder ini. Lewati instalasi npm module (biasanya karena dijalankan di VPS).${NC}"
+    fi
     
     echo -e "${GREEN}[SUKSES] Semua dependensi berhasil diinstall!${NC}"
     read -p "Tekan [ENTER] untuk kembali ke menu utama..."
 }
 
 configure_env() {
-    echo -e "\n${YELLOW}[2/4] Setup Konfigurasi (.env.production)...${NC}"
+    echo -e "\n${YELLOW}[2/5] Setup Konfigurasi (.env.production)...${NC}"
     
     # Baca nilai default jika file sudah ada
     DEFAULT_PORT=3000
@@ -138,8 +143,14 @@ EOF
 }
 
 start_app() {
-    echo -e "\n${YELLOW}[3/4] Menjalankan / Restart Aplikasi via PM2...${NC}"
+    echo -e "\n${YELLOW}[3/5] Menjalankan / Restart Aplikasi via PM2...${NC}"
     
+    if [ ! -f server.js ]; then
+        echo -e "${RED}[ERROR] File server.js tidak ditemukan di folder ini! Menu ini hanya untuk PC Lokal tempat server dijalankan.${NC}"
+        read -p "Tekan [ENTER] untuk kembali..."
+        return
+    fi
+
     if [ ! -f .env.production ]; then
         echo -e "${YELLOW}[Peringatan] File .env.production belum ada. Menggunakan konfigurasi default...${NC}"
         cat <<EOF > .env.production
@@ -160,16 +171,16 @@ EOF
     pm2 save
     
     echo -e "\n${GREEN}[SUKSES] Aplikasi berhasil dijalankan!${NC}"
-    echo -e "${YELLOW}Untuk membuat PM2 otomatis berjalan saat VPS reboot/restart, silakan jalankan perintah ini:${NC}"
+    echo -e "${YELLOW}Untuk membuat PM2 otomatis berjalan saat VPS/PC reboot, silakan jalankan perintah ini:${NC}"
     echo -e "${CYAN}pm2 startup${NC}"
     echo -e "Lalu salin & jalankan baris perintah output dari command tersebut di terminal Anda."
     read -p "Tekan [ENTER] untuk kembali ke menu utama..."
 }
 
 configure_ufw() {
-    echo -e "\n${YELLOW}[4/4] Konfigurasi UFW Firewall (Opsional Keamanan)...${NC}"
+    echo -e "\n${YELLOW}[4/5] Konfigurasi UFW Firewall (Opsional Keamanan)...${NC}"
     if ! command -v ufw &> /dev/null; then
-        echo -e "${RED}[ERROR] UFW Firewall tidak terpasang di VPS Anda. Pasang dulu menggunakan: sudo apt install ufw${NC}"
+        echo -e "${RED}[ERROR] UFW Firewall tidak terpasang di sistem Anda. Pasang dulu menggunakan: sudo apt install ufw${NC}"
         read -p "Tekan [ENTER] untuk kembali..."
         return
     fi
@@ -219,6 +230,92 @@ configure_ufw() {
     read -p "Tekan [ENTER] untuk kembali..."
 }
 
+configure_nginx() {
+    echo -e "\n${YELLOW}[5/5] Setup Nginx Reverse Proxy (Khusus di VPS)...${NC}"
+    if ! command -v nginx &> /dev/null; then
+        echo -e "${RED}[ERROR] Nginx tidak ditemukan di sistem ini. Silakan install Nginx terlebih dahulu (Menu 1).${NC}"
+        read -p "Tekan [ENTER] untuk kembali..."
+        return
+    fi
+    
+    echo -e "Masukkan Nama Domain / Subdomain Anda (Contoh: kasir.tokosaya.com):"
+    read -p "Domain: " DOMAIN_NAME
+    
+    if [ -z "$DOMAIN_NAME" ]; then
+        echo -e "${RED}[ERROR] Domain tidak boleh kosong! Proses dibatalkan.${NC}"
+        read -p "Tekan [ENTER] untuk kembali..."
+        return
+    fi
+    
+    echo -e "\nMasukkan IP Wireguard & Port PC Lokal Toko Anda (Contoh: http://10.0.0.2:3000):"
+    read -p "Backend URL [http://10.0.0.2:3000]: " BACKEND_URL
+    BACKEND_URL=${BACKEND_URL:-"http://10.0.0.2:3000"}
+    
+    CONFIG_FILE="/etc/nginx/sites-available/$DOMAIN_NAME"
+    SYMLINK_FILE="/etc/nginx/sites-enabled/$DOMAIN_NAME"
+    
+    echo -e "\n${CYAN}Membuat file konfigurasi Nginx di: $CONFIG_FILE...${NC}"
+    sudo bash -c "cat <<EOF > $CONFIG_FILE
+server {
+    listen 80;
+    server_name $DOMAIN_NAME;
+
+    access_log /var/log/nginx/\${DOMAIN_NAME}_access.log;
+    error_log /var/log/nginx/\${DOMAIN_NAME}_error.log;
+
+    location / {
+        proxy_pass $BACKEND_URL;
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+
+        # WebSockets support
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection \"upgrade\";
+        
+        proxy_connect_timeout 60s;
+        proxy_read_timeout 60s;
+        proxy_send_timeout 60s;
+    }
+}
+EOF"
+
+    if [ ! -L "$SYMLINK_FILE" ]; then
+        echo -e "${CYAN}Mengaktifkan virtual host dengan membuat symlink...${NC}"
+        sudo ln -s "$CONFIG_FILE" "$SYMLINK_FILE"
+    fi
+    
+    echo -e "\n${YELLOW}Menguji konfigurasi Nginx (nginx -t)...${NC}"
+    if sudo nginx -t; then
+        echo -e "${GREEN}Konfigurasi Nginx valid! Memuat ulang Nginx...${NC}"
+        sudo systemctl reload nginx
+        echo -e "${GREEN}[SUKSES] Nginx berhasil di-reload!${NC}"
+    else
+        echo -e "${RED}[ERROR] Konfigurasi Nginx tidak valid! Membatalkan reload.${NC}"
+        read -p "Tekan [ENTER] untuk kembali..."
+        return
+    fi
+    
+    # Let's Encrypt SSL Certbot setup
+    echo -e "\n${YELLOW}Setup SSL / HTTPS Let's Encrypt?${NC}"
+    read -p "Apakah Anda ingin memasang SSL Certbot untuk domain $DOMAIN_NAME? (y/n): " INSTALL_SSL
+    if [ "$INSTALL_SSL" = "y" ] || [ "$INSTALL_SSL" = "Y" ]; then
+        if ! command -v certbot &> /dev/null; then
+            echo -e "${CYAN}Menginstall certbot...${NC}"
+            sudo apt update && sudo apt install certbot python3-certbot-nginx -y
+        fi
+        sudo certbot --nginx -d "$DOMAIN_NAME"
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}[SUKSES] SSL HTTPS Let's Encrypt berhasil dipasang untuk $DOMAIN_NAME!${NC}"
+        else
+            echo -e "${RED}[GAGAL] Certbot gagal memverifikasi domain Anda.${NC}"
+        fi
+    fi
+    read -p "Tekan [ENTER] untuk kembali..."
+}
+
 stop_app() {
     echo -e "\n${YELLOW}Menghentikan Aplikasi via PM2...${NC}"
     pm2 stop "project-pos"
@@ -243,31 +340,33 @@ view_status() {
 while true; do
     clear
     show_banner
-    echo -e "1) Install Dependensi Sistem (Node.js, PM2, sqlite3, git)"
-    echo -e "2) Atur File Konfigurasi Baru (.env.production)"
-    echo -e "3) Jalankan / Restart Aplikasi (PM2)"
+    echo -e "1) Install Dependensi Sistem (Node.js, PM2, SQLite3, Nginx, Git)"
+    echo -e "2) Atur File Konfigurasi Baru Lokal (.env.production)"
+    echo -e "3) Jalankan / Restart Aplikasi Lokal (PM2)"
     echo -e "4) Atur Keamanan UFW Firewall (Opsional)"
-    echo -e "5) Lihat Status Aplikasi"
-    echo -e "6) Lihat Log Server Terkini (Live)"
-    echo -e "7) Hentikan Sementara Aplikasi (PM2 Stop)"
-    echo -e "8) Keluar dari Script"
+    echo -e "5) Atur Reverse Proxy Nginx (Khusus di VPS)"
+    echo -e "6) Lihat Status Aplikasi Lokal"
+    echo -e "7) Lihat Log Server Terkini (Live)"
+    echo -e "8) Hentikan Sementara Aplikasi Lokal (PM2 Stop)"
+    echo -e "9) Keluar dari Script"
     echo -e "${CYAN}-----------------------------------------------------------------${NC}"
-    read -p "Pilih menu [1-8]: " choice
+    read -p "Pilih menu [1-9]: " choice
     
     case $choice in
         1) install_dependencies ;;
         2) configure_env ;;
         3) start_app ;;
         4) configure_ufw ;;
-        5) view_status ;;
-        6) view_logs ;;
-        7) stop_app ;;
-        8) 
-            echo -e "\n${GREEN}Terima kasih telah menggunakan Kasirku POS Deployment Wizard!${NC}"
+        5) configure_nginx ;;
+        6) view_status ;;
+        7) view_logs ;;
+        8) stop_app ;;
+        9) 
+            echo -e "\n${GREEN}Terima kasih telah menggunakan Kasirku POS Wizard!${NC}"
             exit 0
             ;;
         *)
-            echo -e "\n${RED}Pilihan tidak valid! Silakan pilih antara 1-8.${NC}"
+            echo -e "\n${RED}Pilihan tidak valid! Silakan pilih antara 1-9.${NC}"
             sleep 1.5
             ;;
     esac
