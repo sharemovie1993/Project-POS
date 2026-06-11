@@ -5,7 +5,7 @@ require('dotenv').config({ path: path.join(__dirname, envFile) });
 
 const express = require('express');
 const cors = require('cors');
-const { PORT, logger } = require('./utils/logger');
+const { PORT, HOST, logger } = require('./utils/logger');
 const { initializeDatabase } = require('./db/init');
 
 // Global flags
@@ -38,6 +38,6 @@ app.use('/', require('./routes/cash-sessions'));
 app.use('/', require('./routes/data'));
 
 // Jalankan Server
-app.listen(PORT, () => {
-  console.log(`Server Kasir berjalan di http://localhost:${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Server Kasir berjalan di http://${HOST}:${PORT}`);
 });

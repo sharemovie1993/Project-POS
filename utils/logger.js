@@ -1,6 +1,7 @@
 // ==================== KONFIGURASI ENVIRONMENT ====================
 const NODE_ENV      = process.env.NODE_ENV      || 'development';
 const PORT          = process.env.PORT          || 3000;
+const HOST          = process.env.HOST          || '0.0.0.0';
 const DB_NAME       = process.env.DB_NAME       || 'kasir.db';
 const LOG_LEVEL     = process.env.LOG_LEVEL     || 'verbose';
 
@@ -16,8 +17,8 @@ const logger = {
 console.log('='.repeat(55));
 console.log(`  🚀 Kasirku POS - Mode: ${NODE_ENV.toUpperCase()}`);
 console.log(`  📦 Database   : ${DB_NAME}`);
-console.log(`  🌐 Port       : ${PORT}`);
+console.log(`  🌐 Address    : http://${HOST}:${PORT}`);
 console.log(`  📋 Log Level  : ${LOG_LEVEL}`);
 console.log('='.repeat(55));
 
-module.exports = { NODE_ENV, PORT, DB_NAME, LOG_LEVEL, logger };
+module.exports = { NODE_ENV, PORT, HOST, DB_NAME, LOG_LEVEL, logger };

@@ -1,8 +1,8 @@
 {
-  "watch": ["server.js", "public/", "config-mikrotik.json", "routes/", "db/", "utils/"],
-  "ignore": ["kasir*.db", "node_modules/", "*.log"],
-  "ext": "js,json,html,css",
-  "delay": 500,
+  "watch": ["server.js", "routes/", "db/", "utils/"],
+  "ignore": ["*.db", "kasir_dev.db", "kasir.db", "node_modules/", "*.log", "config-mikrotik.json", "public/", "*.json"],
+  "ext": "js",
+  "delay": 1000,
   "env": {
     "NODE_ENV": "development"
   }
