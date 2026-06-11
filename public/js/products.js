@@ -263,3 +263,32 @@ async function deleteProduct(id) {
     }
   }
 }
+
+function switchCatalogTab(tabId) {
+  activeCatalogTab = tabId;
+
+  // Sembunyikan semua konten sub-tab
+  document.getElementById('catalogContentList').classList.add('hidden');
+  document.getElementById('catalogContentStockIn').classList.add('hidden');
+  document.getElementById('catalogContentCategories').classList.add('hidden');
+
+  // Hapus aktif semua tombol
+  document.getElementById('subTabCatalogList').classList.remove('active');
+  document.getElementById('subTabCatalogStockIn').classList.remove('active');
+  document.getElementById('subTabCatalogCategories').classList.remove('active');
+
+  if (tabId === 'list') {
+    document.getElementById('subTabCatalogList').classList.add('active');
+    document.getElementById('catalogContentList').classList.remove('hidden');
+    fetchProductCatalog();
+  } else if (tabId === 'stockin') {
+    document.getElementById('subTabCatalogStockIn').classList.add('active');
+    document.getElementById('catalogContentStockIn').classList.remove('hidden');
+    fetchStockEntries();
+  } else if (tabId === 'categories') {
+    document.getElementById('subTabCatalogCategories').classList.add('active');
+    document.getElementById('catalogContentCategories').classList.remove('hidden');
+    fetchCategories();
+  }
+}
+

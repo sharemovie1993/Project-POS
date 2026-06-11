@@ -144,3 +144,34 @@ function stopCameraScanner() {
     }
   }
 }
+
+function openCameraScanner(targetInputId = null) {
+  cameraTargetInputId = targetInputId;
+  document.getElementById('cameraScannerModal').classList.remove('hidden');
+  startCameraScanner('cameraScannerReader', (barcode) => {
+    if (cameraTargetInputId) {
+      const inputEl = document.getElementById(cameraTargetInputId);
+      if (inputEl) {
+        inputEl.value = barcode;
+        inputEl.dispatchEvent(new Event('input', { bubbles: true }));
+        inputEl.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    } else {
+      addBarcodeToCart(barcode);
+    }
+    closeCameraScanner();
+  });
+}
+
+function closeCameraScanner() {
+  stopCameraScanner();
+  document.getElementById('cameraScannerModal').classList.add('hidden');
+  if (cameraTargetInputId) {
+    const inputEl = document.getElementById(cameraTargetInputId);
+    if (inputEl) inputEl.focus();
+    cameraTargetInputId = null;
+  } else if (activeScreen === 'pos') {
+    document.getElementById('barcodeSearchInput').focus();
+  }
+}
+
