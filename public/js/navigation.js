@@ -225,4 +225,5 @@ function switchMobilePosTab(tab) {
       checkoutBar.style.display = 'none';
       checkoutBar.classList.add('hidden'); // Paksa sembunyikan dengan display: none !important
     }
+  }
 }
