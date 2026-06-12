@@ -116,6 +116,21 @@ function updateAppBranding() {
       reportPrintLogoContainer.innerHTML = '';
     }
   }
+
+  // Set default values for tax and discount on POS screen on initial load
+  const taxInput = document.getElementById('inputTax');
+  const discountInput = document.getElementById('inputDiscount');
+  
+  if (taxInput && (taxInput.value === '0' || taxInput.value === '')) {
+    taxInput.value = systemSettings.default_tax_rate !== undefined ? systemSettings.default_tax_rate : '0';
+  }
+  if (discountInput && (discountInput.value === '0' || discountInput.value === '')) {
+    discountInput.value = systemSettings.default_discount !== undefined ? systemSettings.default_discount : '0';
+  }
+  
+  if (typeof calculateBilling === 'function') {
+    calculateBilling();
+  }
 }
 
 function loadStoreBranding() {
@@ -123,11 +138,15 @@ function loadStoreBranding() {
   const addressInput = document.getElementById('inputStoreAddress');
   const phoneInput = document.getElementById('inputStorePhone');
   const footerInput = document.getElementById('inputStoreFooter');
+  const defaultTaxRateInput = document.getElementById('inputDefaultTaxRate');
+  const defaultDiscountInput = document.getElementById('inputDefaultDiscount');
   
   if (nameInput) nameInput.value = systemSettings.store_name || 'KASIRKU POS';
   if (addressInput) addressInput.value = systemSettings.store_address || '';
   if (phoneInput) phoneInput.value = systemSettings.store_phone || '';
   if (footerInput) footerInput.value = systemSettings.store_footer || '';
+  if (defaultTaxRateInput) defaultTaxRateInput.value = systemSettings.default_tax_rate !== undefined ? systemSettings.default_tax_rate : '0';
+  if (defaultDiscountInput) defaultDiscountInput.value = systemSettings.default_discount !== undefined ? systemSettings.default_discount : '0';
   
   const preview = document.getElementById('storeLogoPreview');
   const placeholder = document.getElementById('storeLogoPlaceholder');
@@ -160,6 +179,8 @@ async function saveStoreBranding(e) {
   const phone = document.getElementById('inputStorePhone').value.trim();
   const footer = document.getElementById('inputStoreFooter').value;
   const logo = uploadedStoreLogoBase64;
+  const defaultTaxRateVal = document.getElementById('inputDefaultTaxRate') ? document.getElementById('inputDefaultTaxRate').value.trim() : '0';
+  const defaultDiscountVal = document.getElementById('inputDefaultDiscount') ? document.getElementById('inputDefaultDiscount').value.trim() : '0';
 
   if (!name) {
     showToast('Nama toko wajib diisi!', 'warning');
@@ -171,7 +192,9 @@ async function saveStoreBranding(e) {
     store_address: address,
     store_phone: phone,
     store_logo: logo,
-    store_footer: footer
+    store_footer: footer,
+    default_tax_rate: defaultTaxRateVal,
+    default_discount: defaultDiscountVal
   };
 
   try {

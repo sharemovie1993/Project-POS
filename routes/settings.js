@@ -24,6 +24,8 @@ router.get('/api/settings', async (req, res) => {
     if (settings.store_footer === undefined) {
       settings.store_footer = 'Terima Kasih atas Kunjungan Anda\nBarang yang sudah dibeli\ntidak dapat ditukar/dikembalikan';
     }
+    if (settings.default_tax_rate === undefined) settings.default_tax_rate = '0';
+    if (settings.default_discount === undefined) settings.default_discount = '0';
     res.json(settings);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -38,7 +40,9 @@ router.post('/api/settings', async (req, res) => {
     store_address,
     store_phone,
     store_logo,
-    store_footer
+    store_footer,
+    default_tax_rate,
+    default_discount
   } = req.body;
 
   try {
@@ -65,6 +69,12 @@ router.post('/api/settings', async (req, res) => {
     }
     if (store_footer !== undefined) {
       await dbRun("INSERT OR REPLACE INTO settings (key, value) VALUES ('store_footer', ?)", [store_footer]);
+    }
+    if (default_tax_rate !== undefined) {
+      await dbRun("INSERT OR REPLACE INTO settings (key, value) VALUES ('default_tax_rate', ?)", [default_tax_rate.trim()]);
+    }
+    if (default_discount !== undefined) {
+      await dbRun("INSERT OR REPLACE INTO settings (key, value) VALUES ('default_discount', ?)", [default_discount.trim()]);
     }
 
     await dbRun('COMMIT');

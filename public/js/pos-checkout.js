@@ -309,8 +309,8 @@ async function processCheckout() {
       const select = document.getElementById('selectCustomer');
       if (select) select.value = '';
       
-      document.getElementById('inputDiscount').value = '';
-      document.getElementById('inputTax').value = '0';
+      document.getElementById('inputDiscount').value = systemSettings.default_discount !== undefined ? systemSettings.default_discount : '';
+      document.getElementById('inputTax').value = systemSettings.default_tax_rate !== undefined ? systemSettings.default_tax_rate : '0';
       document.getElementById('inputAmountPaid').value = '';
       
       // Sembunyikan field split
