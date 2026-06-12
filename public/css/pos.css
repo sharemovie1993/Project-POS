@@ -536,3 +536,102 @@ body.light-mode .pos-revenue-icon.debit {
   overflow: hidden;
   color: var(--text-main);
 }
+
+/* ==================== PREMIUM FEATURE WIDGETS ==================== */
+
+/* 1. Quick Keys (Produk Cepat) */
+.pos-quick-keys-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  margin-top: 16px;
+  padding: 16px;
+}
+
+.pos-quick-keys-card .card-header {
+  padding: 0 0 12px 0;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quick-keys-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 8px;
+}
+
+.quick-key-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 10px 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  gap: 4px;
+}
+
+.quick-key-btn:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-glow);
+  transform: translateY(-1px);
+}
+
+.quick-key-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-main);
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.quick-key-price {
+  font-size: 10px;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* 2. Split Payment Inputs */
+.split-pay-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background-color: rgba(99, 102, 241, 0.03);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-primary);
+  margin-top: 8px;
+}
+
+/* 3. Customer Selection Info */
+.customer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: var(--color-primary-glow);
+  color: var(--color-primary);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+/* 4. PIN override styling */
+.pin-input-large {
+  font-size: 24px !important;
+  letter-spacing: 12px !important;
+  text-align: center !important;
+  font-family: monospace;
+}

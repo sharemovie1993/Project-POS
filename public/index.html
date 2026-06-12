@@ -183,6 +183,18 @@
           </div>
         </div>
 
+        <!-- Mobile POS View Toggler (Only visible on Mobile) -->
+        <div class="mobile-pos-tabs" id="mobilePosTabs">
+          <button class="mobile-pos-tab-btn active" onclick="switchMobilePosTab('cart')">
+            <i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i>
+            <span>Keranjang (<span id="mobileCartCount">0</span>)</span>
+          </button>
+          <button class="mobile-pos-tab-btn" onclick="switchMobilePosTab('checkout')">
+            <i data-lucide="credit-card" style="width: 16px; height: 16px;"></i>
+            <span>Pembayaran</span>
+          </button>
+        </div>
+
         <div class="pos-grid">
           
           <!-- Left Column: Cart & Scanning Inputs -->
@@ -206,6 +218,18 @@
                 <i data-lucide="history"></i>
                 <span>Transaksi Hari Ini</span>
               </button>
+
+              <!-- Hold Current Transaction -->
+              <button class="btn btn-secondary-glow" onclick="holdCurrentTransaction()" title="Tahan Transaksi Belanja (F4)" style="color: var(--color-warning); border-color: rgba(245, 158, 11, 0.3);">
+                <i data-lucide="pause-circle"></i>
+                <span>Tahan</span>
+              </button>
+
+              <!-- Recall Transaction -->
+              <button class="btn btn-secondary-glow" id="btnRecallTransaction" onclick="openHeldTransactionsModal()" title="Panggil Transaksi yang Ditahan (F7)">
+                <i data-lucide="play-circle"></i>
+                <span>Panggil (<span id="heldCount">0</span>)</span>
+              </button>
               
               <!-- Manual Search Results Dropdown -->
               <div class="search-results-dropdown hidden" id="searchResultsDropdown">
@@ -216,8 +240,10 @@
             <!-- Shopping Cart Table -->
             <div class="pos-cart-card">
               <div class="card-header">
-                <h3>Keranjang Belanja</h3>
-                <span class="item-count" id="cartItemCount">0 Barang</span>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <h3>Keranjang Belanja</h3>
+                  <span class="item-count" id="cartItemCount">0 Barang</span>
+                </div>
               </div>
               <div class="cart-table-wrapper">
                 <table class="cart-table" id="cartTable">
@@ -242,6 +268,16 @@
                     </tr>
                   </tbody>
                 </table>
+            </div>
+
+            <!-- Quick Keys (Produk Terlaris/Cepat) -->
+            <div class="pos-quick-keys-card">
+              <div class="card-header">
+                <i data-lucide="zap" style="color: var(--color-warning); width: 16px; height: 16px;"></i>
+                <h3 style="font-size: 14px; font-weight: 700;">Tombol Cepat (Quick Keys)</h3>
+              </div>
+              <div class="quick-keys-grid" id="quickKeysGrid">
+                <!-- Dynamic Quick Keys -->
               </div>
             </div>
           </div>
@@ -281,10 +317,27 @@
                   </div>
                 </div>
 
+                <!-- Pelanggan / Member (CRM) -->
+                <div class="form-group">
+                  <label for="selectCustomer">Pelanggan / Member</label>
+                  <div style="display: flex; gap: 8px;">
+                    <select id="selectCustomer" style="flex: 1;" onchange="changeSelectedCustomer(this.value)">
+                      <option value="">-- Non-Member / Umum --</option>
+                      <!-- Dynamic customer option list -->
+                    </select>
+                    <button class="btn btn-secondary-glow btn-xs" onclick="openAddCustomerModal()" title="Tambah Member Baru" style="padding: 0 10px;">
+                      <i data-lucide="user-plus" style="width: 14px; height: 14px;"></i>
+                    </button>
+                  </div>
+                  <div id="customerInfoBadge" class="customer-badge hidden">
+                    <!-- Member discount details -->
+                  </div>
+                </div>
+
                 <!-- Payment Method Toggle -->
                 <div class="form-group">
                   <label>Metode Pembayaran</label>
-                  <div class="payment-methods-grid">
+                  <div class="payment-methods-grid" style="grid-template-columns: repeat(4, 1fr);">
                     <label class="pay-method-card active" id="payMethodTunai">
                       <input type="radio" name="paymentMethod" value="TUNAI" checked onchange="togglePaymentMethod('TUNAI')">
                       <i data-lucide="banknote"></i>
@@ -300,6 +353,32 @@
                       <i data-lucide="credit-card"></i>
                       <span>DEBIT</span>
                     </label>
+                    <label class="pay-method-card" id="payMethodSplit">
+                      <input type="radio" name="paymentMethod" value="SPLIT" onchange="togglePaymentMethod('SPLIT')">
+                      <i data-lucide="shuffle"></i>
+                      <span>SPLIT</span>
+                    </label>
+                  </div>
+                </div>
+
+                <!-- Split Payment Inputs -->
+                <div id="splitPaymentFields" class="split-pay-inputs hidden">
+                  <div style="display: flex; gap: 8px; align-items: center;">
+                    <div style="flex: 1;">
+                      <label style="font-size: 11px; margin-bottom: 4px; display: block;">Nominal Tunai (Rp)</label>
+                      <input type="number" id="splitCashInput" placeholder="0" min="0" oninput="calculateSplitChange()">
+                    </div>
+                    <div style="flex: 1;">
+                      <label style="font-size: 11px; margin-bottom: 4px; display: block;">Nominal Non-Tunai (Rp)</label>
+                      <input type="number" id="splitNonCashInput" placeholder="0" min="0" readonly>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top: 8px; margin-bottom: 0;">
+                    <label style="font-size: 11px; margin-bottom: 4px; display: block;">Penerimaan Non-Tunai Via</label>
+                    <select id="splitNonCashMethod" style="width: 100%;">
+                      <option value="QRIS">QRIS</option>
+                      <option value="DEBIT">Kartu Debit</option>
+                    </select>
                   </div>
                 </div>
 
@@ -1722,6 +1801,96 @@
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" onclick="closeExpenseModal()">Batal</button>
           <button type="submit" class="btn btn-primary">Simpan Pengeluaran</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: HELD TRANSACTIONS (PANGGIL BELANJA) ==================== -->
+  <div class="modal-backdrop hidden" id="heldTransactionsModal">
+    <div class="modal-card modal-md">
+      <div class="modal-header">
+        <h3>Transaksi yang Ditahan</h3>
+        <button class="btn-close" onclick="closeHeldTransactionsModal()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="modal-body" style="max-height: 350px; overflow-y: auto;">
+        <div class="table-card" style="margin: 0; box-shadow: none; border: none; background: transparent;">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Waktu</th>
+                <th>Item</th>
+                <th>Total</th>
+                <th class="text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="heldTransactionsTableBody">
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary btn-block" onclick="closeHeldTransactionsModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: TAMBAH PELANGGAN / MEMBER ==================== -->
+  <div class="modal-backdrop hidden" id="customerModal">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3>Daftar Member Baru</h3>
+        <button class="btn-close" onclick="closeAddCustomerModal()"><i data-lucide="x"></i></button>
+      </div>
+      <form id="customerForm" onsubmit="processAddCustomer(event)">
+        <div class="modal-body">
+          <div class="form-group mb-3">
+            <label for="customerName">Nama Pelanggan / Member</label>
+            <input type="text" id="customerName" required placeholder="Masukkan nama member...">
+          </div>
+          <div class="form-group mb-3">
+            <label for="customerPhone">No. Telepon / WhatsApp</label>
+            <input type="text" id="customerPhone" placeholder="Contoh: 081234567890">
+          </div>
+          <div class="form-group mb-3">
+            <label for="customerDiscount">Diskon Member (%)</label>
+            <input type="number" id="customerDiscount" min="0" max="100" placeholder="0" value="0">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeAddCustomerModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Member</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL: OTORISASI SUPERVISOR ==================== -->
+  <div class="modal-backdrop hidden" id="supervisorOverrideModal" style="z-index: 100001;">
+    <div class="modal-card modal-sm" style="max-width: 380px;">
+      <div class="modal-header">
+        <h3>Otorisasi Supervisor</h3>
+        <button class="btn-close" onclick="closeSupervisorOverrideModal()"><i data-lucide="x"></i></button>
+      </div>
+      <form id="supervisorOverrideForm" onsubmit="processSupervisorOverride(event)">
+        <div class="modal-body">
+          <p class="text-muted text-xs mb-3 text-center">Tindakan ini memerlukan persetujuan Supervisor / Admin.</p>
+          <div class="form-group mb-3">
+            <label for="overrideUsername">Username Admin / Supervisor</label>
+            <input type="text" id="overrideUsername" required placeholder="Username supervisor..." autocomplete="username">
+          </div>
+          <div class="form-group mb-3">
+            <label for="overridePassword">Password Admin / Supervisor</label>
+            <input type="password" id="overridePassword" required placeholder="Password supervisor..." autocomplete="current-password">
+          </div>
+          <div class="alert-box alert-warning hidden" id="overrideErrorAlert" style="padding: 8px 12px; font-size: 11px; margin-bottom: 0; border-radius: var(--radius-sm); border-color: var(--color-danger); color: var(--color-danger); background-color: rgba(244, 63, 94, 0.05);">
+            Username/password supervisor salah atau bukan admin!
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeSupervisorOverrideModal()">Batal</button>
+          <button type="submit" class="btn btn-primary">Otorisasi</button>
         </div>
       </form>
     </div>

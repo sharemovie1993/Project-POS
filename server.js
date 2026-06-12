@@ -27,6 +27,7 @@ app.use('/', require('./routes/categories'));
 app.use('/', require('./routes/products'));
 app.use('/', require('./routes/owners'));
 app.use('/', require('./routes/users'));
+app.use('/', require('./routes/customers'));
 app.use('/', require('./routes/settings'));
 app.use('/', require('./routes/transactions'));
 app.use('/', require('./routes/void'));

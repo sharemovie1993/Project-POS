@@ -9,7 +9,7 @@ const { logger } = require('../utils/logger');
 
 // Simpan transaksi baru (Atomic dengan Transaction Rollback)
 router.post('/api/transactions', (req, res) => {
-  const { cashier_name, payment_method, total_amount, discount, tax, payment_amount, change_amount, items } = req.body;
+  const { cashier_name, payment_method, total_amount, discount, tax, payment_amount, change_amount, items, customer_name, customer_id, payment_details } = req.body;
 
   if (!cashier_name || !items || items.length === 0) {
     return res.status(400).json({ error: 'Data transaksi tidak lengkap' });
@@ -32,8 +32,8 @@ router.post('/api/transactions', (req, res) => {
 
       // Insert ke tabel transactions
       const txSql = `
-        INSERT INTO transactions (invoice_number, cashier_name, payment_method, total_amount, discount, tax, payment_amount, change_amount)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO transactions (invoice_number, cashier_name, payment_method, total_amount, discount, tax, payment_amount, change_amount, customer_name, customer_id, payment_details)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const txResult = await dbRun(txSql, [
         invoiceNumber,
@@ -43,7 +43,10 @@ router.post('/api/transactions', (req, res) => {
         discount || 0,
         tax || 0,
         payment_amount,
-        change_amount
+        change_amount,
+        customer_name || null,
+        customer_id || null,
+        payment_details ? (typeof payment_details === 'string' ? payment_details : JSON.stringify(payment_details)) : null
       ]);
       const transactionId = txResult.lastID;
 
@@ -125,15 +128,23 @@ router.post('/api/transactions', (req, res) => {
         }
       }
 
-      // Update kas laci jika pembayaran TUNAI
-      if ((payment_method || 'TUNAI').toUpperCase() === 'TUNAI') {
+      // Update kas laci jika pembayaran TUNAI atau bagian cash dari SPLIT
+      let cashReceived = 0;
+      if (payment_method === 'SPLIT' && payment_details) {
+        let details = typeof payment_details === 'string' ? JSON.parse(payment_details) : payment_details;
+        cashReceived = parseFloat(details.cash) || 0;
+      } else if ((payment_method || 'TUNAI').toUpperCase() === 'TUNAI') {
+        cashReceived = total_amount;
+      }
+
+      if (cashReceived > 0) {
         const activeSession = await dbGet("SELECT id FROM cash_sessions WHERE status = 'OPEN'");
         if (activeSession) {
           await dbRun(`
             UPDATE cash_sessions 
             SET expected_cash = expected_cash + ?, total_cash_sales = total_cash_sales + ?
             WHERE id = ?
-          `, [total_amount, total_amount, activeSession.id]);
+          `, [cashReceived, cashReceived, activeSession.id]);
         }
       }
 

@@ -359,6 +359,53 @@
   .form-actions-row button {
     width: 100% !important;
   }
+
+  /* POS Mobile Tabs View Toggler */
+  .mobile-pos-tabs {
+    display: flex !important;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    gap: 4px;
+    margin-bottom: 16px;
+  }
+
+  .mobile-pos-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+  }
+
+  .mobile-pos-tab-btn:hover {
+    color: var(--color-primary);
+  }
+
+  .mobile-pos-tab-btn.active {
+    background-color: var(--color-primary-glow);
+    color: var(--color-primary);
+  }
+
+  .pos-main.mobile-hidden,
+  .pos-sidebar.mobile-hidden {
+    display: none !important;
+  }
+}
+
+/* Base styles to hide mobile POS tabs on desktop/tablet */
+.mobile-pos-tabs {
+  display: none;
 }
 
 /* Extra small viewport optimizations */

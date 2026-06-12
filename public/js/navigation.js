@@ -86,6 +86,9 @@ function switchScreen(screenId) {
   // Auto-fokus kolom pencarian barcode jika masuk layar POS
   if (screenId === 'pos') {
     fetchPosTodayRevenue();
+    if (typeof switchMobilePosTab === 'function') {
+      switchMobilePosTab('cart');
+    }
     setTimeout(() => {
       document.getElementById('barcodeSearchInput').focus();
     }, 200);
@@ -193,5 +196,27 @@ function toggleMobileSidebar() {
   if (sidebar && overlay) {
     sidebar.classList.toggle('sidebar-open');
     overlay.classList.toggle('active');
+  }
+}
+
+// Switch Mobile POS view layout (Cart vs Checkout)
+function switchMobilePosTab(tab) {
+  const mainCol = document.querySelector('.pos-main');
+  const sidebarCol = document.querySelector('.pos-sidebar');
+  const btnCart = document.querySelector('.mobile-pos-tab-btn:nth-child(1)');
+  const btnCheckout = document.querySelector('.mobile-pos-tab-btn:nth-child(2)');
+
+  if (!mainCol || !sidebarCol || !btnCart || !btnCheckout) return;
+
+  if (tab === 'cart') {
+    btnCart.classList.add('active');
+    btnCheckout.classList.remove('active');
+    mainCol.classList.remove('mobile-hidden');
+    sidebarCol.classList.add('mobile-hidden');
+  } else {
+    btnCart.classList.remove('active');
+    btnCheckout.classList.add('active');
+    mainCol.classList.add('mobile-hidden');
+    sidebarCol.classList.remove('mobile-hidden');
   }
 }

@@ -10,8 +10,16 @@ function setupKeyboardShortcuts() {
     // F4: Fokus nominal uang bayar
     else if (e.key === 'F4') {
       e.preventDefault();
-      if (activeScreen === 'pos' && cart.length > 0 && currentPaymentMethod === 'TUNAI') {
+      if (activeScreen === 'pos' && cart.length > 0 && (currentPaymentMethod === 'TUNAI' || currentPaymentMethod === 'SPLIT')) {
         document.getElementById('inputAmountPaid').focus();
+      }
+    }
+
+    // F7: Panggil transaksi ditahan
+    else if (e.key === 'F7') {
+      e.preventDefault();
+      if (activeScreen === 'pos') {
+        openHeldTransactionsModal();
       }
     }
 

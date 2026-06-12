@@ -4,7 +4,7 @@
 
 // Tambah produk ke keranjang berdasarkan ID produk
 function addSelectedProductToCart(productId) {
-  const product = dbProducts.find(p => p.id === productId);
+  const product = dbProducts.find(p => String(p.id) === String(productId));
   if (!product) return;
 
   const isService = product.is_service == 1;
@@ -150,9 +150,20 @@ function updateCartItemDiscount(index, discountVal) {
     disc = baseSubtotal;
   }
   
-  item.discount = disc;
-  item.subtotal = baseSubtotal - disc;
-  renderCart();
+  // Jika diskon > 25% dari subtotal, minta persetujuan supervisor
+  const isHighDiscount = baseSubtotal > 0 && (disc / baseSubtotal) > 0.25;
+  if (isHighDiscount) {
+    requireSupervisor('Diskon Tinggi (>25%)', () => {
+      item.discount = disc;
+      item.subtotal = baseSubtotal - disc;
+      renderCart();
+      showToast('Diskon disetujui oleh Supervisor', 'success');
+    });
+  } else {
+    item.discount = disc;
+    item.subtotal = baseSubtotal - disc;
+    renderCart();
+  }
 }
 
 function adjustCartQty(index, amount) {
@@ -164,13 +175,17 @@ function adjustCartQty(index, amount) {
 }
 
 function deleteCartItem(index) {
-  cart.splice(index, 1);
-  renderCart();
+  requireSupervisor('Hapus Item Keranjang', () => {
+    cart.splice(index, 1);
+    renderCart();
+    showToast('Item berhasil dihapus dari keranjang', 'info');
+  });
 }
 
 function renderCart() {
   const body = document.getElementById('cartTableBody');
   const countEl = document.getElementById('cartItemCount');
+  const mobileCountEl = document.getElementById('mobileCartCount');
   
   if (cart.length === 0) {
     body.innerHTML = `
@@ -182,6 +197,7 @@ function renderCart() {
       </tr>
     `;
     countEl.innerText = '0 Barang';
+    if (mobileCountEl) mobileCountEl.innerText = '0';
     calculateBilling();
     lucide.createIcons();
     return;
@@ -189,6 +205,9 @@ function renderCart() {
 
   // Hitung jumlah jenis barang
   countEl.innerText = `${cart.length} Jenis Barang`;
+  if (mobileCountEl) {
+    mobileCountEl.innerText = cart.reduce((sum, item) => sum + item.quantity, 0);
+  }
 
   body.innerHTML = cart.map((item, index) => `
     <tr>
@@ -221,4 +240,159 @@ function renderCart() {
 
   calculateBilling();
   lucide.createIcons();
+}
+
+// ==================== PREMIUM FITUR: TAHAN & PANGGIL (HOLD & RECALL) ====================
+
+function holdCurrentTransaction() {
+  if (cart.length === 0) {
+    showToast('Keranjang belanja kosong, tidak ada transaksi untuk ditahan!', 'warning');
+    return;
+  }
+
+  const heldTx = {
+    id: Date.now(),
+    time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    cart: [...cart],
+    total: cart.reduce((sum, item) => sum + item.subtotal, 0)
+  };
+
+  heldTransactions.push(heldTx);
+  localStorage.setItem('held_transactions', JSON.stringify(heldTransactions));
+  
+  cart = [];
+  renderCart();
+  updateHeldCountDisplay();
+  showToast('Transaksi berhasil ditahan', 'success');
+}
+
+function updateHeldCountDisplay() {
+  const countEl = document.getElementById('heldCount');
+  if (countEl) {
+    countEl.innerText = heldTransactions.length;
+  }
+}
+
+function openHeldTransactionsModal() {
+  const modal = document.getElementById('heldTransactionsModal');
+  const body = document.getElementById('heldTransactionsTableBody');
+  
+  if (heldTransactions.length === 0) {
+    body.innerHTML = `
+      <tr>
+        <td colspan="4" class="text-center py-4 text-muted">Tidak ada transaksi yang ditahan</td>
+      </tr>
+    `;
+  } else {
+    body.innerHTML = heldTransactions.map((tx, idx) => `
+      <tr>
+        <td>${tx.time}</td>
+        <td>${tx.cart.length} Item</td>
+        <td class="font-mono font-bold text-primary">Rp ${formatRupiah(tx.total)}</td>
+        <td class="text-center">
+          <div class="input-with-action justify-center">
+            <button class="btn btn-primary btn-xs" onclick="recallTransaction(${idx})">
+              <i data-lucide="play" style="width:12px;height:12px;"></i> Panggil
+            </button>
+            <button class="btn btn-secondary btn-xs text-danger" onclick="discardHeldTransaction(${idx})">
+              <i data-lucide="trash" style="width:12px;height:12px;"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+    lucide.createIcons();
+  }
+  
+  modal.classList.remove('hidden');
+}
+
+function closeHeldTransactionsModal() {
+  document.getElementById('heldTransactionsModal').classList.add('hidden');
+}
+
+function recallTransaction(idx) {
+  if (cart.length > 0) {
+    if (!confirm('Keranjang saat ini tidak kosong. Panggil transaksi ini akan menimpa keranjang saat ini. Lanjutkan?')) {
+      return;
+    }
+  }
+
+  const tx = heldTransactions[idx];
+  cart = [...tx.cart];
+  
+  heldTransactions.splice(idx, 1);
+  localStorage.setItem('held_transactions', JSON.stringify(heldTransactions));
+  
+  closeHeldTransactionsModal();
+  renderCart();
+  updateHeldCountDisplay();
+  showToast('Transaksi berhasil dipanggil kembali', 'success');
+}
+
+function discardHeldTransaction(idx) {
+  if (confirm('Apakah Anda yakin ingin menghapus transaksi yang ditahan ini?')) {
+    heldTransactions.splice(idx, 1);
+    localStorage.setItem('held_transactions', JSON.stringify(heldTransactions));
+    openHeldTransactionsModal();
+    updateHeldCountDisplay();
+    showToast('Transaksi ditahan dihapus', 'info');
+  }
+}
+
+// ==================== PREMIUM FITUR: OTORISASI PIN SUPERVISOR (PIN GUARD) ====================
+
+let supervisorCallback = null;
+
+function requireSupervisor(actionName, callback) {
+  if (currentUser && currentUser.role === 'admin') {
+    callback();
+    return;
+  }
+
+  supervisorCallback = callback;
+
+  document.getElementById('overrideUsername').value = '';
+  document.getElementById('overridePassword').value = '';
+  document.getElementById('overrideErrorAlert').classList.add('hidden');
+  document.getElementById('supervisorOverrideModal').classList.remove('hidden');
+  document.getElementById('overrideUsername').focus();
+}
+
+function closeSupervisorOverrideModal() {
+  document.getElementById('supervisorOverrideModal').classList.add('hidden');
+  supervisorCallback = null;
+}
+
+async function processSupervisorOverride(e) {
+  e.preventDefault();
+  const username = document.getElementById('overrideUsername').value.trim();
+  const password = document.getElementById('overridePassword').value;
+  const errorAlert = document.getElementById('overrideErrorAlert');
+
+  try {
+    const response = await fetch(`${API_URL}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await response.json();
+    if (response.ok && data.user && data.user.role === 'admin') {
+      closeSupervisorOverrideModal();
+      showToast('Otorisasi Supervisor Berhasil!', 'success');
+      if (supervisorCallback) {
+        const cb = supervisorCallback;
+        supervisorCallback = null;
+        cb();
+      }
+    } else {
+      errorAlert.innerText = 'Username/password supervisor salah atau bukan admin!';
+      errorAlert.classList.remove('hidden');
+    }
+  } catch (error) {
+    console.error('Gagal otentikasi supervisor:', error);
+    errorAlert.innerText = 'Koneksi server gagal!';
+    errorAlert.classList.remove('hidden');
+  }
 }

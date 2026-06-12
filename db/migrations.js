@@ -198,6 +198,54 @@ const MIGRATIONS = [
         // Abaikan jika kolom sudah ada
       }
     }
+  },
+  {
+    version: 7,
+    date: '2026-06-12',
+    desc: 'Tambah tabel customers dan kolom customer/split-payment di tabel transactions',
+    up: async () => {
+      // 1. Buat tabel customers
+      await dbRun(`
+        CREATE TABLE IF NOT EXISTS customers (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          name TEXT UNIQUE NOT NULL,
+          phone TEXT,
+          discount_percent REAL DEFAULT 0,
+          created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+      `);
+      logger.info('Migrasi v7: tabel customers berhasil dibuat');
+
+      // Seeding awal default customers jika kosong
+      const countRow = await dbGet('SELECT COUNT(*) as count FROM customers');
+      if (countRow.count === 0) {
+        const defaultMembers = [
+          { name: 'Budi Santoso', phone: '081234567890', discount: 5 },
+          { name: 'Dewi Sartika', phone: '089876543210', discount: 10 },
+          { name: 'Ahmad Faisal', phone: '085223344556', discount: 0 }
+        ];
+        for (const member of defaultMembers) {
+          await dbRun('INSERT INTO customers (name, phone, discount_percent) VALUES (?, ?, ?)', [member.name, member.phone, member.discount]);
+        }
+        logger.info('Migrasi v7: seeding data pelanggan default selesai');
+      }
+
+      // 2. Tambahkan kolom-kolom baru di tabel transactions
+      try {
+        await dbRun('ALTER TABLE transactions ADD COLUMN customer_name TEXT');
+        logger.info('Migrasi v7: kolom customer_name ditambahkan ke tabel transactions');
+      } catch (e) { /* skip */ }
+
+      try {
+        await dbRun('ALTER TABLE transactions ADD COLUMN customer_id TEXT');
+        logger.info('Migrasi v7: kolom customer_id ditambahkan ke tabel transactions');
+      } catch (e) { /* skip */ }
+
+      try {
+        await dbRun('ALTER TABLE transactions ADD COLUMN payment_details TEXT');
+        logger.info('Migrasi v7: kolom payment_details ditambahkan ke tabel transactions');
+      } catch (e) { /* skip */ }
+    }
   }
 ];
 

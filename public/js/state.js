@@ -35,3 +35,10 @@ let dbAllCategoriesWithCount = [];
 let activeCashSession = null;
 let trendChartInstance = null;
 let pieChartInstance = null;
+
+// Cashier Premium Feature States
+let heldTransactions = JSON.parse(localStorage.getItem('held_transactions') || '[]');
+let selectedCustomer = null;
+let dbCustomers = [];
+let splitCashAmount = 0;
+let splitNonCashAmount = 0;

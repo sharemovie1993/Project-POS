@@ -77,13 +77,15 @@
 .stock-empty { background-color: var(--color-danger); }
 
 /* ==================== UNIVERSAL VIEW CARDS LAYOUT TRANSFORMATION ==================== */
-.table-card.view-cards {
+.table-card.view-cards,
+.pos-cart-card.view-cards {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-.table-card.view-cards .card-header {
+.table-card.view-cards .card-header,
+.pos-cart-card.view-cards .card-header {
   background-color: var(--bg-card) !important;
   border: 1px solid var(--border-color) !important;
   border-radius: var(--radius-lg) !important;
@@ -91,16 +93,19 @@
   margin-bottom: 16px !important;
 }
 
-.table-card.view-cards .data-table {
+.table-card.view-cards .data-table,
+.pos-cart-card.view-cards .cart-table {
   display: block !important;
   width: 100% !important;
 }
 
-.table-card.view-cards .data-table thead {
+.table-card.view-cards .data-table thead,
+.pos-cart-card.view-cards .cart-table thead {
   display: none !important; /* Sembunyikan header kolom */
 }
 
-.table-card.view-cards .data-table tbody {
+.table-card.view-cards .data-table tbody,
+.pos-cart-card.view-cards .cart-table tbody {
   display: grid !important;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
   gap: 16px !important;
@@ -109,7 +114,8 @@
   box-sizing: border-box !important;
 }
 
-.table-card.view-cards .data-table tr {
+.table-card.view-cards .data-table tr,
+.pos-cart-card.view-cards .cart-table tr {
   display: flex !important;
   flex-direction: column !important;
   background-color: var(--bg-card) !important;
@@ -124,13 +130,15 @@
   width: 100% !important;
 }
 
-.table-card.view-cards .data-table tr:hover {
+.table-card.view-cards .data-table tr:hover,
+.pos-cart-card.view-cards .cart-table tr:hover {
   transform: translateY(-2px) !important;
   box-shadow: var(--shadow-md) !important;
   border-color: var(--color-primary) !important;
 }
 
-.table-card.view-cards .data-table td {
+.table-card.view-cards .data-table td,
+.pos-cart-card.view-cards .cart-table td {
   display: block !important;
   padding: 0 !important;
   border-bottom: none !important;
@@ -141,7 +149,9 @@
 
 /* Sembunyikan baris kosong (empty-cart-row dll) dari bentuk grid atau biarkan melebar 100% */
 .table-card.view-cards .data-table tr:only-child:has(.empty-cart-icon),
-.table-card.view-cards .data-table tr[class*="empty-"] {
+.table-card.view-cards .data-table tr[class*="empty-"],
+.pos-cart-card.view-cards .cart-table tr:only-child:has(.empty-cart-icon),
+.pos-cart-card.view-cards .cart-table tr[class*="empty-"] {
   grid-column: 1 / -1 !important;
   align-items: center !important;
   justify-content: center !important;
@@ -150,7 +160,8 @@
 }
 
 /* Atribut data-label untuk memberi label tiap field pada kartu */
-.table-card.view-cards .data-table td[data-label]::before {
+.table-card.view-cards .data-table td[data-label]::before,
+.pos-cart-card.view-cards .cart-table td[data-label]::before {
   content: attr(data-label) ": ";
   font-weight: 600;
   color: var(--text-muted);
@@ -158,12 +169,15 @@
 
 /* Sembunyikan kolom nomor (No) jika berada di cell pertama */
 .table-card.view-cards .data-table td:first-child:not([data-label]),
-.table-card.view-cards .data-table td:first-child[data-label*="No"] {
+.table-card.view-cards .data-table td:first-child[data-label*="No"],
+.pos-cart-card.view-cards .cart-table td:first-child:not([data-label]),
+.pos-cart-card.view-cards .cart-table td:first-child[data-label*="No"] {
   display: none !important;
 }
 
 /* Penyesuaian khusus tombol aksi di dasar kartu */
-.table-card.view-cards .data-table td:last-child {
+.table-card.view-cards .data-table td:last-child,
+.pos-cart-card.view-cards .cart-table td:last-child {
   display: flex !important;
   gap: 8px !important;
   margin-top: auto !important;
@@ -172,13 +186,17 @@
   width: 100% !important;
 }
 
-.table-card.view-cards .data-table td:last-child::before {
+.table-card.view-cards .data-table td:last-child::before,
+.pos-cart-card.view-cards .cart-table td:last-child::before {
   content: "" !important; /* Hilangkan prefix label "Aksi: " */
 }
 
 .table-card.view-cards .data-table td:last-child button,
 .table-card.view-cards .data-table td:last-child a,
-.table-card.view-cards .data-table td:last-child .btn {
+.table-card.view-cards .data-table td:last-child .btn,
+.pos-cart-card.view-cards .cart-table td:last-child button,
+.pos-cart-card.view-cards .cart-table td:last-child a,
+.pos-cart-card.view-cards .cart-table td:last-child .btn {
   flex: 1 !important;
   justify-content: center !important;
   padding: 8px !important;

@@ -43,6 +43,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (typeof renderCart === 'function') {
       renderCart();
     }
+
+    // Inisialisasi Fitur Premium Kasir
+    if (typeof fetchCustomers === 'function') fetchCustomers();
+    if (typeof renderQuickKeys === 'function') renderQuickKeys();
+    if (typeof updateHeldCountDisplay === 'function') updateHeldCountDisplay();
   } catch (error) {
     console.error('Error saat inisialisasi awal aplikasi:', error);
     alert('Gagal memuat aplikasi (Inisialisasi Awal):\n\n' + error.message + '\n\nDetail: ' + error.stack);
@@ -69,12 +74,12 @@ function formatHeaderTitle(tableId) {
 
 // Fungsi untuk menyuntikkan tombol toggle pada setiap table-card
 function addUniversalTableViewToggles() {
-  document.querySelectorAll('.table-card').forEach((card, index) => {
+  document.querySelectorAll('.table-card, .pos-cart-card').forEach((card, index) => {
     let header = card.querySelector('.card-header');
-    const table = card.querySelector('table.data-table');
+    const table = card.querySelector('table.data-table, table.cart-table');
     
-    // Jangan tambahkan toggle di keranjang POS atau kartu backup
-    if (card.classList.contains('pos-cart-card') || card.id === 'panelBackupRestore' || card.id === 'panelClearDatabase') {
+    // Jangan tambahkan toggle di kartu backup atau clear database
+    if (card.id === 'panelBackupRestore' || card.id === 'panelClearDatabase') {
       return;
     }
     
@@ -137,7 +142,7 @@ const tableResponsiveObserver = new MutationObserver(() => {
   addUniversalTableViewToggles();
 
   // 2. Petakan nama kolom (thead th) ke data-label di setiap sel (tbody td)
-  document.querySelectorAll('table.data-table').forEach(table => {
+  document.querySelectorAll('table.data-table, table.cart-table').forEach(table => {
     // Kumpulkan teks header kolom
     const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
     
@@ -164,3 +169,31 @@ document.addEventListener('DOMContentLoaded', () => {
   // Jalankan inisialisasi awal sekali
   addUniversalTableViewToggles();
 });
+
+// ==================== PREMIUM FITUR: TOMBOL CEPAT (QUICK KEYS) ====================
+
+function renderQuickKeys() {
+  const grid = document.getElementById('quickKeysGrid');
+  if (!grid) return;
+
+  if (!dbProducts || dbProducts.length === 0) {
+    // Tunggu fetchProductsCache selesai memuat produk
+    setTimeout(renderQuickKeys, 300);
+    return;
+  }
+
+  // Pilih 12 produk pertama untuk tombol cepat
+  const quickProducts = dbProducts.slice(0, 12);
+
+  if (quickProducts.length === 0) {
+    grid.innerHTML = `<p class="text-muted text-xs text-center py-3" style="grid-column: 1/-1;">Katalog produk kosong</p>`;
+    return;
+  }
+
+  grid.innerHTML = quickProducts.map(p => `
+    <button class="quick-key-btn" type="button" onclick="addSelectedProductToCart('${p.id}')">
+      <span class="quick-key-name" title="${p.name}">${p.name}</span>
+      <span class="quick-key-price">Rp ${formatRupiah(p.price_sell)}</span>
+    </button>
+  `).join('');
+}
