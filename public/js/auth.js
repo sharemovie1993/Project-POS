@@ -76,8 +76,19 @@ function checkUserAuth() {
     checkActiveShift();
 
   } catch (e) {
-    console.error('Error parsing user data:', e);
-    logout();
+    console.error('Error parsing user data or initializing app:', e);
+    localStorage.setItem('last_auth_error', e.stack || e.toString());
+    
+    // Hapus data sesi untuk reset state, tetapi JANGAN reload halaman agar log tidak terhapus
+    localStorage.removeItem('pos_user');
+    currentUser = null;
+    
+    if (loginOverlay) {
+      loginOverlay.classList.remove('hidden');
+    }
+    
+    // Tampilkan alert box dengan pesan error agar bisa dibaca langsung oleh user
+    alert('Terjadi kesalahan inisialisasi aplikasi:\n\n' + e.message + '\n\nSilakan buka Developer Console (F12) untuk detail stack trace.');
   }
 }
 
