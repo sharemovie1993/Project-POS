@@ -404,16 +404,17 @@
     display: none !important; /* Sembunyikan tombol toggle view di mobile */
   }
 
-  .cart-table, .data-table {
+  /* 1. GENERAL DATABASE TABLES (Product, Users, etc.) */
+  .data-table {
     display: block !important;
     width: 100% !important;
   }
   
-  .cart-table thead, .data-table thead {
+  .data-table thead {
     display: none !important;
   }
   
-  .cart-table tbody, .data-table tbody {
+  .data-table tbody {
     display: grid !important;
     grid-template-columns: 1fr !important; /* Satu kolom di HP */
     gap: 12px !important;
@@ -421,7 +422,7 @@
     width: 100% !important;
   }
   
-  .cart-table tr, .data-table tr {
+  .data-table tr {
     display: flex !important;
     flex-direction: column !important;
     background-color: var(--bg-card) !important;
@@ -435,8 +436,6 @@
     box-sizing: border-box !important;
   }
 
-  .cart-table tr:only-child:has(.empty-cart-icon),
-  .cart-table tr[class*="empty-"],
   .data-table tr:only-child:has(.empty-cart-icon),
   .data-table tr[class*="empty-"] {
     grid-column: 1 / -1 !important;
@@ -446,7 +445,7 @@
     padding: 32px !important;
   }
   
-  .cart-table td, .data-table td {
+  .data-table td {
     display: block !important;
     padding: 0 !important;
     border-bottom: none !important;
@@ -455,20 +454,18 @@
     color: var(--text-main) !important;
   }
 
-  .cart-table td[data-label]::before, .data-table td[data-label]::before {
+  .data-table td[data-label]::before {
     content: attr(data-label) ": ";
     font-weight: 600;
     color: var(--text-muted);
   }
 
-  .cart-table td:first-child:not([data-label]),
   .data-table td:first-child:not([data-label]),
-  .cart-table td:first-child[data-label*="No"],
   .data-table td:first-child[data-label*="No"] {
     display: none !important;
   }
 
-  .cart-table td:last-child, .data-table td:last-child {
+  .data-table td:last-child {
     display: flex !important;
     gap: 8px !important;
     margin-top: 8px !important;
@@ -477,17 +474,192 @@
     width: 100% !important;
   }
 
-  .cart-table td:last-child::before, .data-table td:last-child::before {
+  .data-table td:last-child::before {
     content: "" !important;
   }
 
-  .cart-table td:last-child button, .data-table td:last-child button,
-  .cart-table td:last-child a, .data-table td:last-child a,
-  .cart-table td:last-child .btn, .data-table td:last-child .btn {
+  .data-table td:last-child button,
+  .data-table td:last-child a,
+  .data-table td:last-child .btn {
     flex: 1 !important;
     justify-content: center !important;
     padding: 8px !important;
     font-size: 12px !important;
+  }
+
+  /* 2. PREMIUM SHOPPING CART CARDS LAYOUT */
+  .cart-table {
+    display: block !important;
+    width: 100% !important;
+  }
+  
+  .cart-table thead {
+    display: none !important;
+  }
+  
+  .cart-table tbody {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  
+  .cart-table tr {
+    display: grid !important;
+    grid-template-areas:
+      "product product delete"
+      "price qty qty"
+      "discount discount subtotal" !important;
+    grid-template-columns: 1.1fr 1.1fr 40px !important;
+    gap: 12px 8px !important;
+    padding: 14px 16px !important;
+    position: relative !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    background-color: var(--bg-card) !important;
+    margin-bottom: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .cart-table tr:only-child:has(.empty-cart-icon),
+  .cart-table tr[class*="empty-"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    padding: 32px !important;
+  }
+  
+  .cart-table td {
+    display: block !important;
+    padding: 0 !important;
+    border: none !important;
+    font-size: 13px !important;
+    color: var(--text-main) !important;
+    background: transparent !important;
+  }
+
+  .cart-table td:nth-child(1) {
+    grid-area: product !important;
+  }
+
+  .cart-table td:nth-child(2) {
+    display: none !important; /* Hide redundant barcode column */
+  }
+
+  .cart-table td:nth-child(3) {
+    grid-area: price !important;
+    display: flex !important;
+    align-items: center !important;
+    text-align: left !important;
+    gap: 4px !important;
+  }
+
+  .cart-table td:nth-child(3)::before {
+    content: "Harga: " !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    font-size: 11px !important;
+  }
+
+  .cart-table td:nth-child(4) {
+    grid-area: qty !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 6px !important;
+  }
+
+  .cart-table td:nth-child(4)::before {
+    content: "Jumlah: " !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    font-size: 11px !important;
+  }
+
+  .cart-table td:nth-child(5) {
+    grid-area: discount !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+  }
+
+  .cart-table td:nth-child(5)::before {
+    content: "Diskon (Rp): " !important;
+    font-weight: 600 !important;
+    color: var(--text-muted) !important;
+    font-size: 11px !important;
+  }
+
+  .cart-table td:nth-child(5) input {
+    width: 70px !important;
+    max-width: 70px !important;
+    text-align: right !important;
+    padding: 4px 8px !important;
+    height: 28px !important;
+    font-size: 12px !important;
+    border-radius: var(--radius-sm) !important;
+  }
+
+  .cart-table td:nth-child(6) {
+    grid-area: subtotal !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    text-align: right !important;
+  }
+
+  .cart-table td:nth-child(6)::before {
+    content: "Subtotal" !important;
+    font-size: 10px !important;
+    color: var(--text-muted) !important;
+    font-weight: 600 !important;
+  }
+
+  .cart-table td:nth-child(6) {
+    font-family: 'JetBrains Mono', monospace !important;
+    font-weight: 800 !important;
+  }
+
+  .cart-table td:nth-child(7) {
+    grid-area: delete !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    justify-content: flex-end !important;
+  }
+
+  .cart-table td:nth-child(7) button {
+    padding: 6px !important;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: var(--radius-md) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+
+  /* Prevent qty input and buttons from overflowing/cutting off */
+  .qty-counter {
+    height: 30px !important;
+  }
+
+  .qty-counter .qty-btn {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .qty-counter .qty-input {
+    width: 36px !important;
+    max-width: 36px !important;
+    padding: 0 !important;
+    height: 28px !important;
+    font-size: 13px !important;
+    border: none !important;
+    box-shadow: none !important;
   }
 
   /* ===== END MOBILE POS ===== */
