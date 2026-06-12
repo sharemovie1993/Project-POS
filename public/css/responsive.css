@@ -492,16 +492,20 @@
   }
 
   /* 2. PREMIUM SHOPPING CART CARDS LAYOUT */
-  .cart-table {
+  .pos-cart-card.view-cards .cart-table,
+  .pos-cart-card .cart-table {
     display: block !important;
     width: 100% !important;
+    border: none !important;
   }
   
-  .cart-table thead {
+  .pos-cart-card.view-cards .cart-table thead,
+  .pos-cart-card .cart-table thead {
     display: none !important;
   }
   
-  .cart-table tbody {
+  .pos-cart-card.view-cards .cart-table tbody,
+  .pos-cart-card .cart-table tbody {
     display: grid !important;
     grid-template-columns: 1fr !important;
     gap: 12px !important;
@@ -509,14 +513,15 @@
     width: 100% !important;
   }
   
-  .cart-table tr {
+  .pos-cart-card.view-cards .cart-table tr,
+  .pos-cart-card .cart-table tr {
     display: grid !important;
     grid-template-areas:
       "product product delete"
       "price qty qty"
       "discount discount subtotal" !important;
-    grid-template-columns: 1.1fr 1.1fr 40px !important;
-    gap: 12px 8px !important;
+    grid-template-columns: 1.1fr 1.1fr 60px !important;
+    gap: 10px 8px !important;
     padding: 14px 16px !important;
     position: relative !important;
     border: 1px solid var(--border-color) !important;
@@ -527,8 +532,10 @@
     box-sizing: border-box !important;
   }
 
-  .cart-table tr:only-child:has(.empty-cart-icon),
-  .cart-table tr[class*="empty-"] {
+  .pos-cart-card.view-cards .cart-table tr:only-child:has(.empty-cart-icon),
+  .pos-cart-card.view-cards .cart-table tr[class*="empty-"],
+  .pos-cart-card .cart-table tr:only-child:has(.empty-cart-icon),
+  .pos-cart-card .cart-table tr[class*="empty-"] {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -536,24 +543,46 @@
     padding: 32px !important;
   }
   
-  .cart-table td {
-    display: block !important;
+  .pos-cart-card.view-cards .cart-table td,
+  .pos-cart-card .cart-table td {
+    display: flex !important;
     padding: 0 !important;
     border: none !important;
     font-size: 13px !important;
     color: var(--text-main) !important;
     background: transparent !important;
+    width: auto !important;
+    margin: 0 !important;
+    height: auto !important;
+    box-sizing: border-box !important;
   }
 
-  .cart-table td:nth-child(1) {
+  /* Reset default data-label prefix from tables.css */
+  .pos-cart-card.view-cards .cart-table td[data-label]::before,
+  .pos-cart-card .cart-table td[data-label]::before {
+    content: "" !important;
+    display: none !important;
+  }
+
+  /* Product Cell */
+  .pos-cart-card.view-cards .cart-table td:nth-child(1),
+  .pos-cart-card .cart-table td:nth-child(1) {
     grid-area: product !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    justify-content: center !important;
   }
 
-  .cart-table td:nth-child(2) {
-    display: none !important; /* Hide redundant barcode column */
+  /* Barcode Cell (Hidden) */
+  .pos-cart-card.view-cards .cart-table td:nth-child(2),
+  .pos-cart-card .cart-table td:nth-child(2) {
+    display: none !important;
   }
 
-  .cart-table td:nth-child(3) {
+  /* Unit Price Cell */
+  .pos-cart-card.view-cards .cart-table td:nth-child(3),
+  .pos-cart-card .cart-table td:nth-child(3) {
     grid-area: price !important;
     display: flex !important;
     align-items: center !important;
@@ -561,14 +590,18 @@
     gap: 4px !important;
   }
 
-  .cart-table td:nth-child(3)::before {
+  .pos-cart-card.view-cards .cart-table td:nth-child(3)::before,
+  .pos-cart-card .cart-table td:nth-child(3)::before {
     content: "Harga: " !important;
+    display: inline !important;
     font-weight: 600 !important;
     color: var(--text-muted) !important;
     font-size: 11px !important;
   }
 
-  .cart-table td:nth-child(4) {
+  /* Qty Cell */
+  .pos-cart-card.view-cards .cart-table td:nth-child(4),
+  .pos-cart-card .cart-table td:nth-child(4) {
     grid-area: qty !important;
     display: flex !important;
     align-items: center !important;
@@ -576,28 +609,35 @@
     gap: 6px !important;
   }
 
-  .cart-table td:nth-child(4)::before {
+  .pos-cart-card.view-cards .cart-table td:nth-child(4)::before,
+  .pos-cart-card .cart-table td:nth-child(4)::before {
     content: "Jumlah: " !important;
+    display: inline !important;
     font-weight: 600 !important;
     color: var(--text-muted) !important;
     font-size: 11px !important;
   }
 
-  .cart-table td:nth-child(5) {
+  /* Discount Cell */
+  .pos-cart-card.view-cards .cart-table td:nth-child(5),
+  .pos-cart-card .cart-table td:nth-child(5) {
     grid-area: discount !important;
     display: flex !important;
     align-items: center !important;
     gap: 6px !important;
   }
 
-  .cart-table td:nth-child(5)::before {
+  .pos-cart-card.view-cards .cart-table td:nth-child(5)::before,
+  .pos-cart-card .cart-table td:nth-child(5)::before {
     content: "Diskon (Rp): " !important;
+    display: inline !important;
     font-weight: 600 !important;
     color: var(--text-muted) !important;
     font-size: 11px !important;
   }
 
-  .cart-table td:nth-child(5) input {
+  .pos-cart-card.view-cards .cart-table td:nth-child(5) input,
+  .pos-cart-card .cart-table td:nth-child(5) input {
     width: 70px !important;
     max-width: 70px !important;
     text-align: right !important;
@@ -607,7 +647,9 @@
     border-radius: var(--radius-sm) !important;
   }
 
-  .cart-table td:nth-child(6) {
+  /* Subtotal Cell */
+  .pos-cart-card.view-cards .cart-table td:nth-child(6),
+  .pos-cart-card .cart-table td:nth-child(6) {
     grid-area: subtotal !important;
     display: flex !important;
     flex-direction: column !important;
@@ -616,26 +658,34 @@
     text-align: right !important;
   }
 
-  .cart-table td:nth-child(6)::before {
+  .pos-cart-card.view-cards .cart-table td:nth-child(6)::before,
+  .pos-cart-card .cart-table td:nth-child(6)::before {
     content: "Subtotal" !important;
+    display: block !important;
     font-size: 10px !important;
     color: var(--text-muted) !important;
     font-weight: 600 !important;
   }
 
-  .cart-table td:nth-child(6) {
+  .pos-cart-card.view-cards .cart-table td:nth-child(6),
+  .pos-cart-card .cart-table td:nth-child(6) {
     font-family: 'JetBrains Mono', monospace !important;
     font-weight: 800 !important;
   }
 
-  .cart-table td:nth-child(7) {
+  /* Delete Action Cell */
+  .pos-cart-card.view-cards .cart-table td:nth-child(7),
+  .pos-cart-card .cart-table td:nth-child(7) {
     grid-area: delete !important;
     display: flex !important;
     align-items: flex-start !important;
     justify-content: flex-end !important;
+    border-top: none !important;
+    padding-top: 0 !important;
   }
 
-  .cart-table td:nth-child(7) button {
+  .pos-cart-card.view-cards .cart-table td:nth-child(7) button,
+  .pos-cart-card .cart-table td:nth-child(7) button {
     padding: 6px !important;
     width: 32px !important;
     height: 32px !important;
@@ -644,19 +694,36 @@
     align-items: center !important;
     justify-content: center !important;
     margin: 0 !important;
+    flex: none !important;
   }
 
-  /* Prevent qty input and buttons from overflowing/cutting off */
-  .qty-counter {
+  /* Qty counter elements */
+  .pos-cart-card.view-cards .qty-counter,
+  .pos-cart-card .qty-counter {
     height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    overflow: hidden !important;
+    background-color: var(--bg-input) !important;
   }
 
-  .qty-counter .qty-btn {
+  .pos-cart-card.view-cards .qty-counter .qty-btn,
+  .pos-cart-card .qty-counter .qty-btn {
     width: 28px !important;
     height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    padding: 0 !important;
   }
 
-  .qty-counter .qty-input {
+  .pos-cart-card.view-cards .qty-counter .qty-input,
+  .pos-cart-card .qty-counter .qty-input {
     width: 36px !important;
     max-width: 36px !important;
     padding: 0 !important;
@@ -664,6 +731,8 @@
     font-size: 13px !important;
     border: none !important;
     box-shadow: none !important;
+    text-align: center !important;
+    background: transparent !important;
   }
 
   /* ===== END MOBILE POS ===== */
