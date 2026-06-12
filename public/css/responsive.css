@@ -307,6 +307,11 @@
     display: flex !important;
   }
 
+  /* Hide default checkout button inside the checkout form on mobile */
+  #btnCheckout {
+    display: none !important;
+  }
+
   /* Hide pos-sidebar by default on mobile */
   .pos-sidebar {
     display: none !important;

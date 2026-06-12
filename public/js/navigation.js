@@ -204,6 +204,7 @@ function switchMobilePosTab(tab) {
   const mainCol = document.querySelector('.pos-main');
   const sidebarCol = document.querySelector('.pos-sidebar');
   const checkoutBar = document.getElementById('mobileCheckoutBar');
+  const checkoutBtn = document.querySelector('.mobile-checkout-btn');
 
   if (!mainCol || !sidebarCol) return;
 
@@ -216,14 +217,24 @@ function switchMobilePosTab(tab) {
       checkoutBar.style.display = '';
       checkoutBar.classList.remove('hidden');
     }
+    if (checkoutBtn) {
+      checkoutBtn.setAttribute('onclick', "switchMobilePosTab('checkout')");
+      checkoutBtn.innerHTML = '<i data-lucide="arrow-right"></i><span>Bayar</span>';
+      if (window.lucide) window.lucide.createIcons();
+    }
   } else {
     // Show checkout, hide cart
     mainCol.classList.add('mobile-hidden');
     sidebarCol.classList.add('mobile-visible');
     sidebarCol.style.display = 'block';
     if (checkoutBar) {
-      checkoutBar.style.display = 'none';
-      checkoutBar.classList.add('hidden'); // Paksa sembunyikan dengan display: none !important
+      checkoutBar.style.display = '';
+      checkoutBar.classList.remove('hidden'); // Selalu tampilkan di halaman checkout mobile
+    }
+    if (checkoutBtn) {
+      checkoutBtn.setAttribute('onclick', "processCheckout()");
+      checkoutBtn.innerHTML = '<i data-lucide="check-circle-2"></i><span>Bayar & Cetak Struk</span>';
+      if (window.lucide) window.lucide.createIcons();
     }
   }
 }
