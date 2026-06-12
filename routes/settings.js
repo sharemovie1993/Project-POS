@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { dbAll, dbRun } = require('../db/connection');
 const { logger } = require('../utils/logger');
+const { exec } = require('child_process');
 
 // ==================== ENDPOINT API PENGATURAN SISTEM ====================
 
@@ -78,6 +79,90 @@ router.post('/api/settings', async (req, res) => {
   } catch (error) {
     try { await dbRun('ROLLBACK'); } catch (e) {}
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Check update via Git
+router.get('/api/settings/update-check', async (req, res) => {
+  try {
+    // 1. Jalankan git fetch untuk sinkronisasi dengan remote origin
+    exec('git fetch origin', { timeout: 10000 }, (fetchErr) => {
+      if (fetchErr) {
+        logger.error('Gagal melakukan git fetch:', fetchErr.message);
+        return res.status(500).json({ error: 'Gagal sinkronisasi ke GitHub. Pastikan internet terhubung.' });
+      }
+
+      // 2. Dapatkan hash local HEAD
+      exec('git rev-parse --short HEAD', (localErr, localStdout) => {
+        if (localErr) {
+          logger.error('Gagal mendapatkan local commit SHA:', localErr.message);
+          return res.status(500).json({ error: 'Gagal membaca versi lokal.' });
+        }
+        const localSha = localStdout.trim();
+
+        // 3. Dapatkan hash remote origin/main
+        // Catatan: Proyek ini menggunakan branch utama 'main'
+        exec('git rev-parse --short origin/main', (remoteErr, remoteStdout) => {
+          if (remoteErr) {
+            logger.error('Gagal mendapatkan remote commit SHA:', remoteErr.message);
+            return res.status(500).json({ error: 'Gagal membaca versi terbaru di remote server.' });
+          }
+          const remoteSha = remoteStdout.trim();
+          const upToDate = (localSha === remoteSha);
+
+          if (upToDate) {
+            return res.json({
+              upToDate: true,
+              localSha,
+              remoteSha,
+              changelog: []
+            });
+          }
+
+          // 4. Dapatkan daftar perubahan komit (changelog)
+          exec('git log HEAD..origin/main --oneline', (logErr, logStdout) => {
+            const changelog = logErr ? [] : logStdout.trim().split('\n').filter(Boolean);
+            res.json({
+              upToDate: false,
+              localSha,
+              remoteSha,
+              changelog
+            });
+          });
+        });
+      });
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Terapkan update (git pull + process exit untuk restart otomatis)
+router.post('/api/settings/update-apply', async (req, res) => {
+  try {
+    logger.info('Menerima permintaan pembaruan sistem. Memulai git pull...');
+    
+    exec('git pull origin main', { timeout: 15000 }, (pullErr, pullStdout) => {
+      if (pullErr) {
+        logger.error('Gagal melakukan git pull:', pullErr.message);
+        return res.status(500).json({ error: 'Gagal mengunduh pembaruan dari remote: ' + pullErr.message });
+      }
+
+      logger.info('Git pull sukses. Output:', pullStdout.trim());
+      
+      res.json({
+        success: true,
+        message: 'Pembaruan berhasil diunduh. Server sedang me-restart untuk menerapkan perubahan...'
+      });
+
+      // Restart server secara otomatis setelah 1.5 detik
+      setTimeout(() => {
+        logger.info('Menghentikan server untuk memicu restart otomatis (PM2 / Nodemon)...');
+        process.exit(0);
+      }, 1500);
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 

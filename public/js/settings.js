@@ -196,3 +196,124 @@ async function saveStoreBranding(e) {
     showToast('Koneksi server gagal', 'danger');
   }
 }
+
+// ==================== FITUR CHECK UPDATE SISTEM ====================
+
+async function checkSystemUpdate() {
+  const btnCheck = document.getElementById('btnCheckUpdate');
+  const btnApply = document.getElementById('btnApplyUpdate');
+  const lblStatus = document.getElementById('lblUpdateStatus');
+  const lblLocal = document.getElementById('lblLocalSha');
+  const lblRemote = document.getElementById('lblRemoteSha');
+  const changelogWrapper = document.getElementById('changelogWrapper');
+  const lstChangelog = document.getElementById('lstChangelog');
+
+  if (!btnCheck || !lblStatus || !lblLocal || !lblRemote) return;
+
+  btnCheck.disabled = true;
+  btnCheck.innerHTML = 'Memeriksa...';
+  lblStatus.textContent = 'Memeriksa...';
+  lblStatus.className = 'text-muted';
+  if (changelogWrapper) changelogWrapper.classList.add('hidden');
+
+  try {
+    const response = await fetch(`${API_URL}/api/settings/update-check`);
+    const data = await response.json();
+
+    if (!response.ok) {
+      showToast(data.error || 'Gagal memeriksa pembaruan', 'danger');
+      lblStatus.textContent = 'Gagal memeriksa';
+      lblStatus.className = 'text-danger';
+      return;
+    }
+
+    lblLocal.textContent = data.localSha || '-';
+    lblRemote.textContent = data.remoteSha || '-';
+
+    if (data.upToDate) {
+      lblStatus.textContent = 'Aplikasi Up to Date';
+      lblStatus.style.color = 'var(--color-success)';
+      if (btnApply) btnApply.classList.add('hidden');
+      showToast('Aplikasi Anda sudah menggunakan versi terbaru!', 'success');
+    } else {
+      lblStatus.textContent = 'Tersedia Pembaruan Baru!';
+      lblStatus.style.color = 'var(--color-warning)';
+      if (btnApply) btnApply.classList.remove('hidden');
+
+      // Tampilkan changelog jika ada
+      if (data.changelog && data.changelog.length > 0) {
+        if (lstChangelog && changelogWrapper) {
+          lstChangelog.textContent = data.changelog.join('\n');
+          changelogWrapper.classList.remove('hidden');
+        }
+      }
+      showToast('Tersedia pembaruan baru! Silakan klik "Pasang Update".', 'warning');
+      playBeepSound();
+    }
+  } catch (error) {
+    console.error('Error checking updates:', error);
+    showToast('Koneksi server gagal saat memeriksa pembaruan', 'danger');
+    lblStatus.textContent = 'Koneksi gagal';
+    lblStatus.className = 'text-danger';
+  } finally {
+    btnCheck.disabled = false;
+    btnCheck.innerHTML = '<i data-lucide="search"></i> Periksa Update';
+    if (typeof lucide !== 'undefined') lucide.createIcons();
+  }
+}
+
+async function applySystemUpdate() {
+  const btnApply = document.getElementById('btnApplyUpdate');
+  const btnCheck = document.getElementById('btnCheckUpdate');
+  const lblStatus = document.getElementById('lblUpdateStatus');
+
+  if (!confirm('Apakah Anda yakin ingin memasang pembaruan sekarang?\nAplikasi akan mengunduh kode terbaru dan merestart server secara otomatis.')) {
+    return;
+  }
+
+  if (btnApply) {
+    btnApply.disabled = true;
+    btnApply.innerHTML = 'Mengunduh...';
+  }
+  if (btnCheck) btnCheck.disabled = true;
+  if (lblStatus) {
+    lblStatus.textContent = 'Sedang memperbarui...';
+    lblStatus.style.color = 'var(--color-warning)';
+  }
+
+  try {
+    const response = await fetch(`${API_URL}/api/settings/update-apply`, { method: 'POST' });
+    const data = await response.json();
+
+    if (response.ok && data.success) {
+      showToast(data.message, 'success');
+      playDingSound();
+      
+      if (lblStatus) {
+        lblStatus.textContent = 'Server merestart... Reload halaman...';
+        lblStatus.style.color = 'var(--color-success)';
+      }
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 5000);
+    } else {
+      showToast(data.error || 'Gagal memasang pembaruan', 'danger');
+      if (lblStatus) {
+        lblStatus.textContent = 'Gagal memperbarui';
+        lblStatus.className = 'text-danger';
+      }
+      if (btnApply) {
+        btnApply.disabled = false;
+        btnApply.innerHTML = '<i data-lucide="download"></i> Pasang Update';
+      }
+      if (btnCheck) btnCheck.disabled = false;
+    }
+  } catch (error) {
+    console.error('Error applying updates:', error);
+    showToast('Koneksi terputus saat merestart server. Memuat ulang halaman...', 'warning');
+    setTimeout(() => {
+      window.location.reload();
+    }, 4000);
+  }
+}

@@ -1178,6 +1178,42 @@
             </div>
           </div>
 
+          <!-- Card 3: Pembaruan Sistem -->
+          <div class="table-card flex-1" style="max-width: 500px; margin-top: 20px; box-shadow: var(--shadow-lg);">
+            <div class="card-header">
+              <h3><i data-lucide="refresh-cw" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Pembaruan Aplikasi</h3>
+            </div>
+            <div class="backup-panel-content" style="padding: 24px;">
+              <p class="text-muted text-xs mb-4">Periksa dan unduh pembaruan terbaru untuk sistem kasir langsung dari GitHub repository.</p>
+              
+              <div id="updateStatusWrapper" class="mb-4">
+                <div class="flex items-center gap-3 p-3" style="border: 1px solid var(--color-border); border-radius: 8px; background: rgba(0,0,0,0.01);">
+                  <div style="font-size: 13px;">
+                    <div style="font-weight: 600;">Status Versi: <span id="lblUpdateStatus" class="text-muted" style="font-weight: 600;">Belum diperiksa</span></div>
+                    <div class="text-xs text-muted" style="margin-top: 4px;">SHA Lokal: <span id="lblLocalSha">-</span> | SHA Remote: <span id="lblRemoteSha">-</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Changelog Section (Hidden by default) -->
+              <div id="changelogWrapper" class="hidden mb-4">
+                <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 12px;">Daftar Perubahan Baru:</label>
+                <div id="lstChangelog" style="max-height: 120px; overflow-y: auto; padding: 10px; border: 1px solid var(--color-border); border-radius: 8px; font-family: monospace; font-size: 11px; background: rgba(0,0,0,0.02); line-height: 1.4; white-space: pre-wrap;">
+                  <!-- Diisi dinamis -->
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button type="button" class="btn btn-secondary-light flex-1" id="btnCheckUpdate" onclick="checkSystemUpdate()">
+                  <i data-lucide="search"></i> Periksa Update
+                </button>
+                <button type="button" class="btn btn-danger flex-1 hidden" id="btnApplyUpdate" onclick="applySystemUpdate()">
+                  <i data-lucide="download"></i> Pasang Update
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
 
