@@ -317,6 +317,11 @@
     display: none !important;
   }
 
+  /* Hide the large desktop total display card on mobile checkout screen */
+  .pos-sidebar .payment-display {
+    display: none !important;
+  }
+
   .pos-sidebar.mobile-visible {
     display: block !important;
   }
