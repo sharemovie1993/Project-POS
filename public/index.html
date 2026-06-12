@@ -1150,154 +1150,164 @@
       <section id="screenMikrotik" class="screen-section hidden">
         <div class="report-two-columns" style="align-items: flex-start; max-width: 1100px; margin: 0 auto;">
           
-          <!-- Card 1: Pengaturan MikroTik -->
-          <div class="table-card flex-1" style="max-width: 500px; margin-top: 20px; box-shadow: var(--shadow-lg);">
-            <div class="card-header">
-              <h3><i data-lucide="settings" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Pengaturan MikroTik</h3>
-            </div>
-            <div class="backup-panel-content" style="padding: 24px;">
-              <p class="text-muted text-xs mb-4">Pengaturan integrasi router hotspot dan voucher wifi.</p>
-              <form id="mikrotikConfigForm" onsubmit="saveMikrotikConfig(event)">
-                
-                <!-- Status Integrasi MikroTik Dropdown -->
-                <div class="form-group mb-4">
-                  <label for="selectMikrotikEnabled">Status Integrasi MikroTik Hotspot</label>
-                  <select id="selectMikrotikEnabled" onchange="toggleMikrotikFields(this.value)" style="width: 100%;">
-                    <option value="1">Aktif (Toko Voucher Wifi / RT-RW Net)</option>
-                    <option value="0">Nonaktif (Toko Retail Umum)</option>
-                  </select>
-                </div>
-
-                <!-- Wrapper Kolom Koneksi MikroTik -->
-                <div id="mikrotikFieldsWrapper">
-                  <div class="form-group mb-3">
-                    <label for="mtHost">IP Address Router</label>
-                    <input type="text" id="mtHost" required placeholder="Contoh: 10.10.10.1">
-                  </div>
-                  <div class="form-row mb-3">
-                    <div class="form-group flex-1">
-                      <label for="mtPort">Port API</label>
-                      <input type="number" id="mtPort" required value="8728">
-                    </div>
-                    <div class="form-group flex-1">
-                      <label for="mtUser">Username API</label>
-                      <input type="text" id="mtUser" required placeholder="admin">
-                    </div>
-                  </div>
+          <!-- Column 1: Pengaturan & Pembaruan -->
+          <div class="flex-1 flex-col-gap" style="max-width: 500px; margin-top: 20px;">
+            
+            <!-- Card 1: Pengaturan MikroTik -->
+            <div class="table-card" style="box-shadow: var(--shadow-lg); margin-bottom: 0;">
+              <div class="card-header">
+                <h3><i data-lucide="settings" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Pengaturan MikroTik</h3>
+              </div>
+              <div class="backup-panel-content" style="padding: 24px;">
+                <p class="text-muted text-xs mb-4">Pengaturan integrasi router hotspot dan voucher wifi.</p>
+                <form id="mikrotikConfigForm" onsubmit="saveMikrotikConfig(event)">
+                  
+                  <!-- Status Integrasi MikroTik Dropdown -->
                   <div class="form-group mb-4">
-                    <label for="mtPassword" id="mtPasswordLabel">Password API</label>
-                    <input type="password" id="mtPassword" placeholder="Masukkan password router...">
-                  </div>
-                  <div class="form-group mb-4">
-                    <label for="mtOwner">Pemilik Penjualan Voucher (Owner) *</label>
-                    <select id="mtOwner" style="width: 100%;">
-                      <!-- Diisi dinamis dari API /api/owners -->
+                    <label for="selectMikrotikEnabled">Status Integrasi MikroTik Hotspot</label>
+                    <select id="selectMikrotikEnabled" onchange="toggleMikrotikFields(this.value)" style="width: 100%;">
+                      <option value="1">Aktif (Toko Voucher Wifi / RT-RW Net)</option>
+                      <option value="0">Nonaktif (Toko Retail Umum)</option>
                     </select>
                   </div>
-                </div>
 
-                <div class="form-actions-row" style="display: flex; gap: 12px; margin-top: 24px;">
-                  <button type="button" class="btn btn-secondary-light flex-1" id="btnTestMikrotik" onclick="testMikrotikConnection()">
-                    <i data-lucide="activity"></i> Tes Koneksi
-                  </button>
-                  <button type="submit" class="btn btn-primary flex-1">
-                    <i data-lucide="save"></i> Simpan Seting
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-
-          <!-- Card 2: Branding Toko -->
-          <div class="table-card flex-1" style="max-width: 500px; margin-top: 20px; box-shadow: var(--shadow-lg);">
-            <div class="card-header">
-              <h3><i data-lucide="store" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Branding Toko</h3>
-            </div>
-            <div class="backup-panel-content" style="padding: 24px;">
-              <p class="text-muted text-xs mb-4">Ubah identitas toko yang akan ditampilkan di header aplikasi dan struk belanja thermal.</p>
-              <form id="storeBrandingForm" onsubmit="saveStoreBranding(event)">
-                
-                <!-- Logo Toko (Preview & Upload) -->
-                <div class="form-group mb-3 text-center">
-                  <label style="display: block; text-align: left; margin-bottom: 8px;">Logo Toko</label>
-                  <div style="margin-bottom: 12px; padding: 12px; border: 2px dashed var(--color-border); border-radius: 8px; background: rgba(0,0,0,0.02); min-height: 110px; display: flex; align-items: center; justify-content: center; position: relative;">
-                    <img id="storeLogoPreview" src="" alt="No Logo" style="max-height: 90px; max-width: 180px; object-fit: contain; display: none; margin: 0 auto;">
-                    <div id="storeLogoPlaceholder" class="text-muted text-xs" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
-                      <i data-lucide="image" style="width: 28px; height: 28px;"></i>
-                      <span>Format PNG/JPG/WEBP (Maks 2MB)</span>
+                  <!-- Wrapper Kolom Koneksi MikroTik -->
+                  <div id="mikrotikFieldsWrapper">
+                    <div class="form-group mb-3">
+                      <label for="mtHost">IP Address Router</label>
+                      <input type="text" id="mtHost" required placeholder="Contoh: 10.10.10.1">
+                    </div>
+                    <div class="form-row mb-3">
+                      <div class="form-group flex-1">
+                        <label for="mtPort">Port API</label>
+                        <input type="number" id="mtPort" required value="8728">
+                      </div>
+                      <div class="form-group flex-1">
+                        <label for="mtUser">Username API</label>
+                        <input type="text" id="mtUser" required placeholder="admin">
+                      </div>
+                    </div>
+                    <div class="form-group mb-4">
+                      <label for="mtPassword" id="mtPasswordLabel">Password API</label>
+                      <input type="password" id="mtPassword" placeholder="Masukkan password router...">
+                    </div>
+                    <div class="form-group mb-4">
+                      <label for="mtOwner">Pemilik Penjualan Voucher (Owner) *</label>
+                      <select id="mtOwner" style="width: 100%;">
+                        <!-- Diisi dinamis dari API /api/owners -->
+                      </select>
                     </div>
                   </div>
-                  <div style="display: flex; gap: 8px; justify-content: center;">
-                    <button type="button" class="btn btn-secondary-light btn-xs" onclick="document.getElementById('inputStoreLogoFile').click()">
-                      <i data-lucide="upload" style="width: 14px; height: 14px; margin-right: 4px;"></i> Pilih Gambar
+
+                  <div class="form-actions-row" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px;">
+                    <button type="button" class="btn btn-secondary-light flex-1" id="btnTestMikrotik" onclick="testMikrotikConnection()">
+                      <i data-lucide="activity"></i> Tes Koneksi
                     </button>
-                    <button type="button" class="btn btn-danger btn-xs hidden" id="btnRemoveLogo" onclick="removeStoreLogo()">
-                      <i data-lucide="trash-2" style="width: 14px; height: 14px; margin-right: 4px;"></i> Hapus
+                    <button type="submit" class="btn btn-primary flex-1">
+                      <i data-lucide="save"></i> Simpan Seting
                     </button>
                   </div>
-                  <input type="file" id="inputStoreLogoFile" accept="image/*" style="display: none;" onchange="handleLogoUpload(this)">
+                </form>
+              </div>
+            </div>
+
+            <!-- Card 3: Pembaruan Sistem -->
+            <div class="table-card" style="box-shadow: var(--shadow-lg); margin-bottom: 0;">
+              <div class="card-header">
+                <h3><i data-lucide="refresh-cw" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Pembaruan Aplikasi</h3>
+              </div>
+              <div class="backup-panel-content" style="padding: 24px;">
+                <p class="text-muted text-xs mb-4">Periksa dan unduh pembaruan terbaru untuk sistem kasir langsung dari GitHub repository.</p>
+                
+                <div id="updateStatusWrapper" class="mb-4">
+                  <div class="flex items-center gap-3 p-3" style="border: 1px solid var(--color-border); border-radius: 8px; background: rgba(0,0,0,0.01);">
+                    <div style="font-size: 13px;">
+                      <div style="font-weight: 600;">Status Versi: <span id="lblUpdateStatus" class="text-muted" style="font-weight: 600;">Belum diperiksa</span></div>
+                      <div class="text-xs text-muted" style="margin-top: 4px;">SHA Lokal: <span id="lblLocalSha">-</span> | SHA Remote: <span id="lblRemoteSha">-</span></div>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="form-group mb-3">
-                  <label for="inputStoreName">Nama Toko</label>
-                  <input type="text" id="inputStoreName" required placeholder="Contoh: KASIRKU POS">
-                </div>
-                <div class="form-group mb-3">
-                  <label for="inputStoreAddress">Alamat Toko</label>
-                  <input type="text" id="inputStoreAddress" placeholder="Contoh: Jl. Raya Toko Kasir No. 123">
-                </div>
-                <div class="form-group mb-3">
-                  <label for="inputStorePhone">No Telepon Toko</label>
-                  <input type="text" id="inputStorePhone" placeholder="Contoh: 0812-3456-7890">
-                </div>
-                <div class="form-group mb-4">
-                  <label for="inputStoreFooter">Catatan Kaki Struk (Footer)</label>
-                  <textarea id="inputStoreFooter" rows="3" style="width: 100%; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 13px; resize: vertical;" placeholder="Tulis catatan kaki struk di sini..."></textarea>
+                <!-- Changelog Section (Hidden by default) -->
+                <div id="changelogWrapper" class="hidden mb-4">
+                  <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 12px;">Daftar Perubahan Baru:</label>
+                  <div id="lstChangelog" style="max-height: 120px; overflow-y: auto; padding: 10px; border: 1px solid var(--color-border); border-radius: 8px; font-family: monospace; font-size: 11px; background: rgba(0,0,0,0.02); line-height: 1.4; white-space: pre-wrap;">
+                    <!-- Diisi dinamis -->
+                  </div>
                 </div>
 
-                <div class="form-actions-row" style="display: flex; gap: 12px; margin-top: 24px;">
-                  <button type="submit" class="btn btn-primary flex-1">
-                    <i data-lucide="save"></i> Simpan Branding
+                <div class="form-actions-row" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px;">
+                  <button type="button" class="btn btn-secondary-light flex-1" id="btnCheckUpdate" onclick="checkSystemUpdate()">
+                    <i data-lucide="search"></i> Periksa Update
+                  </button>
+                  <button type="button" class="btn btn-danger flex-1 hidden" id="btnApplyUpdate" onclick="applySystemUpdate()">
+                    <i data-lucide="download"></i> Pasang Update
                   </button>
                 </div>
-              </form>
+              </div>
             </div>
+
           </div>
 
-          <!-- Card 3: Pembaruan Sistem -->
-          <div class="table-card flex-1" style="max-width: 500px; margin-top: 20px; box-shadow: var(--shadow-lg);">
-            <div class="card-header">
-              <h3><i data-lucide="refresh-cw" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Pembaruan Aplikasi</h3>
-            </div>
-            <div class="backup-panel-content" style="padding: 24px;">
-              <p class="text-muted text-xs mb-4">Periksa dan unduh pembaruan terbaru untuk sistem kasir langsung dari GitHub repository.</p>
-              
-              <div id="updateStatusWrapper" class="mb-4">
-                <div class="flex items-center gap-3 p-3" style="border: 1px solid var(--color-border); border-radius: 8px; background: rgba(0,0,0,0.01);">
-                  <div style="font-size: 13px;">
-                    <div style="font-weight: 600;">Status Versi: <span id="lblUpdateStatus" class="text-muted" style="font-weight: 600;">Belum diperiksa</span></div>
-                    <div class="text-xs text-muted" style="margin-top: 4px;">SHA Lokal: <span id="lblLocalSha">-</span> | SHA Remote: <span id="lblRemoteSha">-</span></div>
+          <!-- Column 2: Branding Toko -->
+          <div class="flex-1" style="max-width: 500px; margin-top: 20px;">
+            
+            <!-- Card 2: Branding Toko -->
+            <div class="table-card" style="box-shadow: var(--shadow-lg); margin-bottom: 0;">
+              <div class="card-header">
+                <h3><i data-lucide="store" style="width: 18px; height: 18px; color: var(--color-primary); vertical-align: middle; margin-right: 8px;"></i> Branding Toko</h3>
+              </div>
+              <div class="backup-panel-content" style="padding: 24px;">
+                <p class="text-muted text-xs mb-4">Ubah identitas toko yang akan ditampilkan di header aplikasi dan struk belanja thermal.</p>
+                <form id="storeBrandingForm" onsubmit="saveStoreBranding(event)">
+                  
+                  <!-- Logo Toko (Preview & Upload) -->
+                  <div class="form-group mb-3 text-center">
+                    <label style="display: block; text-align: left; margin-bottom: 8px;">Logo Toko</label>
+                    <div style="margin-bottom: 12px; padding: 12px; border: 2px dashed var(--color-border); border-radius: 8px; background: rgba(0,0,0,0.02); min-height: 110px; display: flex; align-items: center; justify-content: center; position: relative;">
+                      <img id="storeLogoPreview" src="" alt="No Logo" style="max-height: 90px; max-width: 180px; object-fit: contain; display: none; margin: 0 auto;">
+                      <div id="storeLogoPlaceholder" class="text-muted text-xs" style="display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                        <i data-lucide="image" style="width: 28px; height: 28px;"></i>
+                        <span>Format PNG/JPG/WEBP (Maks 2MB)</span>
+                      </div>
+                    </div>
+                    <div style="display: flex; gap: 8px; justify-content: center;">
+                      <button type="button" class="btn btn-secondary-light btn-xs" onclick="document.getElementById('inputStoreLogoFile').click()">
+                        <i data-lucide="upload" style="width: 14px; height: 14px; margin-right: 4px;"></i> Pilih Gambar
+                      </button>
+                      <button type="button" class="btn btn-danger btn-xs hidden" id="btnRemoveLogo" onclick="removeStoreLogo()">
+                        <i data-lucide="trash-2" style="width: 14px; height: 14px; margin-right: 4px;"></i> Hapus
+                      </button>
+                    </div>
+                    <input type="file" id="inputStoreLogoFile" accept="image/*" style="display: none;" onchange="handleLogoUpload(this)">
                   </div>
-                </div>
-              </div>
 
-              <!-- Changelog Section (Hidden by default) -->
-              <div id="changelogWrapper" class="hidden mb-4">
-                <label style="display: block; margin-bottom: 6px; font-weight: 600; font-size: 12px;">Daftar Perubahan Baru:</label>
-                <div id="lstChangelog" style="max-height: 120px; overflow-y: auto; padding: 10px; border: 1px solid var(--color-border); border-radius: 8px; font-family: monospace; font-size: 11px; background: rgba(0,0,0,0.02); line-height: 1.4; white-space: pre-wrap;">
-                  <!-- Diisi dinamis -->
-                </div>
-              </div>
+                  <div class="form-group mb-3">
+                    <label for="inputStoreName">Nama Toko</label>
+                    <input type="text" id="inputStoreName" required placeholder="Contoh: KASIRKU POS">
+                  </div>
+                  <div class="form-group mb-3">
+                    <label for="inputStoreAddress">Alamat Toko</label>
+                    <input type="text" id="inputStoreAddress" placeholder="Contoh: Jl. Raya Toko Kasir No. 123">
+                  </div>
+                  <div class="form-group mb-3">
+                    <label for="inputStorePhone">No Telepon Toko</label>
+                    <input type="text" id="inputStorePhone" placeholder="Contoh: 0812-3456-7890">
+                  </div>
+                  <div class="form-group mb-4">
+                    <label for="inputStoreFooter">Catatan Kaki Struk (Footer)</label>
+                    <textarea id="inputStoreFooter" rows="3" style="width: 100%; border: 1px solid var(--color-border); border-radius: 8px; padding: 10px; font-family: inherit; font-size: 13px; resize: vertical;" placeholder="Tulis catatan kaki struk di sini..."></textarea>
+                  </div>
 
-              <div class="form-actions-row" style="display: flex; gap: 12px; margin-top: 16px;">
-                <button type="button" class="btn btn-secondary-light flex-1" id="btnCheckUpdate" onclick="checkSystemUpdate()">
-                  <i data-lucide="search"></i> Periksa Update
-                </button>
-                <button type="button" class="btn btn-danger flex-1 hidden" id="btnApplyUpdate" onclick="applySystemUpdate()">
-                  <i data-lucide="download"></i> Pasang Update
-                </button>
+                  <div class="form-actions-row" style="display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px;">
+                    <button type="submit" class="btn btn-primary flex-1">
+                      <i data-lucide="save"></i> Simpan Branding
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
+
           </div>
 
         </div>

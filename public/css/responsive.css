@@ -318,7 +318,8 @@
     gap: 16px !important;
   }
 
-  .report-two-columns > .table-card {
+  .report-two-columns > .table-card,
+  .report-two-columns > div {
     max-width: 100% !important;
     width: 100% !important;
   }

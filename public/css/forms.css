@@ -108,3 +108,19 @@ input[type="password"]::placeholder {
   font-size: 13px;
   margin-top: 14px;
 }
+
+/* Form Actions Row Layout Helper */
+.form-actions-row {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+}
+
+.form-actions-row .btn {
+  flex: 1 1 120px !important;
+  padding: 10px 12px !important;
+  font-size: 13px !important;
+  white-space: nowrap !important;
+  min-width: 100px !important;
+}
