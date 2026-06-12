@@ -224,6 +224,32 @@
     overflow-x: hidden !important;
     box-sizing: border-box !important;
   }
+
+  /* POS Grid & children: prevent flex/grid overflow on mobile */
+  .pos-grid {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .pos-main {
+    min-width: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .pos-cart-card,
+  .pos-quick-keys-card {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .pos-sidebar {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
   
   /* Header Layout untuk Mobile */
   .app-header {
@@ -300,12 +326,6 @@
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
   }
-
-  /* Prevent POS Cart Card from horizontal scrolling as its table wrapper handles it */
-  .pos-cart-card {
-    overflow: hidden !important;
-    overflow-x: hidden !important;
-  }
   
   /* Form Filter Laporan / Pencarian menjadi Stack Vertikal */
   .pos-search-panel, 
@@ -318,6 +338,9 @@
     flex-direction: column !important;
     align-items: stretch !important;
     gap: 10px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
   }
   
   .report-two-columns {
@@ -345,7 +368,16 @@
   .filter-dates button,
   .backup-actions button {
     width: 100% !important;
+    max-width: 100% !important;
     margin: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Tombol di mobile boleh wrap text jika terlalu panjang */
+  .pos-search-panel .btn,
+  .form-actions-row .btn {
+    white-space: normal !important;
+    word-break: break-word !important;
   }
   
   .quick-dates {
