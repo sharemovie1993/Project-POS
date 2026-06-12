@@ -342,17 +342,30 @@
     gap: 16px !important;
   }
 
+  /* Make Discount and Tax fields 1 row on mobile */
+  .pos-sidebar .summary-inputs .form-row {
+    flex-direction: row !important;
+    gap: 12px !important;
+  }
+
+  /* Make payment methods 1 row (4 columns) on mobile */
   .payment-methods-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: 8px !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 6px !important;
   }
 
   .pay-method-card {
-    padding: 10px !important;
+    padding: 8px 4px !important;
+    gap: 4px !important;
+  }
+
+  .pay-method-card i {
+    width: 16px !important;
+    height: 16px !important;
   }
 
   .pay-method-card span {
-    font-size: 9px !important;
+    font-size: 8px !important;
   }
 
   /* Mobile back button */
@@ -717,10 +730,10 @@
 
   /* Header Layout untuk Mobile */
   .app-header {
-    flex-direction: column !important;
-    align-items: stretch !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     padding: 12px 0 !important;
-    gap: 12px !important;
     border-bottom: 1px solid var(--border-color);
     margin-bottom: 12px;
   }
@@ -729,7 +742,7 @@
     display: flex !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    width: 100% !important;
+    width: auto !important;
     gap: 12px !important;
   }
   
