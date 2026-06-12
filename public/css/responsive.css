@@ -360,6 +360,10 @@
     display: block !important;
   }
 
+  .mobile-hold-recall.mobile-only {
+    display: flex !important;
+  }
+
   .btn-checkout-back.mobile-only {
     display: flex !important;
     position: absolute !important;

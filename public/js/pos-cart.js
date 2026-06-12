@@ -271,6 +271,10 @@ function updateHeldCountDisplay() {
   if (countEl) {
     countEl.innerText = heldTransactions.length;
   }
+  const mobileCountEl = document.getElementById('mobileHeldCount');
+  if (mobileCountEl) {
+    mobileCountEl.innerText = heldTransactions.length;
+  }
 }
 
 function openHeldTransactionsModal() {
