@@ -55,6 +55,17 @@ function calculateBilling() {
   }
   if (window.lucide) window.lucide.createIcons();
 
+  // Update mobile floating checkout bar
+  const mobileBarTotal = document.getElementById('mobileBarTotal');
+  const mobileBarCartCount = document.getElementById('mobileBarCartCount');
+  if (mobileBarTotal) {
+    mobileBarTotal.innerText = `Rp ${formatRupiah(finalBill)}`;
+  }
+  if (mobileBarCartCount) {
+    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+    mobileBarCartCount.innerText = `${totalQty} item`;
+  }
+
   calculateChange();
 }
 

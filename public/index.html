@@ -208,28 +208,31 @@
               </div>
               
               <!-- Quick Camera Button -->
-              <button class="btn btn-secondary-glow" onclick="openCameraScanner()" title="Scan menggunakan Kamera (F8)">
+              <button class="btn btn-secondary-glow pos-btn-camera" onclick="openCameraScanner()" title="Scan menggunakan Kamera (F8)">
                 <i data-lucide="camera"></i>
-                <span>Scan Kamera</span>
+                <span class="pos-btn-label">Scan Kamera</span>
               </button>
 
-              <!-- Today's Transactions Button -->
-              <button class="btn btn-secondary-light" onclick="openTodayTransactionsModal()" title="Lihat transaksi harian Anda">
-                <i data-lucide="history"></i>
-                <span>Transaksi Hari Ini</span>
-              </button>
+              <!-- Secondary Actions (Hidden on Mobile) -->
+              <div class="pos-secondary-actions">
+                <!-- Today's Transactions Button -->
+                <button class="btn btn-secondary-light" onclick="openTodayTransactionsModal()" title="Lihat transaksi harian Anda">
+                  <i data-lucide="history"></i>
+                  <span>Transaksi Hari Ini</span>
+                </button>
 
-              <!-- Hold Current Transaction -->
-              <button class="btn btn-secondary-glow" onclick="holdCurrentTransaction()" title="Tahan Transaksi Belanja (F4)" style="color: var(--color-warning); border-color: rgba(245, 158, 11, 0.3);">
-                <i data-lucide="pause-circle"></i>
-                <span>Tahan</span>
-              </button>
+                <!-- Hold Current Transaction -->
+                <button class="btn btn-secondary-glow" onclick="holdCurrentTransaction()" title="Tahan Transaksi Belanja (F4)" style="color: var(--color-warning); border-color: rgba(245, 158, 11, 0.3);">
+                  <i data-lucide="pause-circle"></i>
+                  <span>Tahan</span>
+                </button>
 
-              <!-- Recall Transaction -->
-              <button class="btn btn-secondary-glow" id="btnRecallTransaction" onclick="openHeldTransactionsModal()" title="Panggil Transaksi yang Ditahan (F7)">
-                <i data-lucide="play-circle"></i>
-                <span>Panggil (<span id="heldCount">0</span>)</span>
-              </button>
+                <!-- Recall Transaction -->
+                <button class="btn btn-secondary-glow" id="btnRecallTransaction" onclick="openHeldTransactionsModal()" title="Panggil Transaksi yang Ditahan (F7)">
+                  <i data-lucide="play-circle"></i>
+                  <span>Panggil (<span id="heldCount">0</span>)</span>
+                </button>
+              </div>
               
               <!-- Manual Search Results Dropdown -->
               <div class="search-results-dropdown hidden" id="searchResultsDropdown">
@@ -286,7 +289,11 @@
           <!-- Right Column: Checkout Summary -->
           <div class="pos-sidebar">
             <div class="summary-card">
-              <div class="payment-display">
+              <div class="payment-display" style="position: relative;">
+                <button type="button" class="btn-checkout-back mobile-only" onclick="switchMobilePosTab('cart')" title="Kembali ke Keranjang">
+                  <i data-lucide="arrow-left"></i>
+                  <span>Kembali</span>
+                </button>
                 <span class="label">TOTAL BELANJA</span>
                 <span class="total-value" id="totalBelanjaDisplay">Rp 0</span>
               </div>
@@ -413,6 +420,18 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Mobile Floating Checkout Bar (Visible only on mobile) -->
+        <div class="mobile-checkout-bar" id="mobileCheckoutBar">
+          <div class="mobile-checkout-info">
+            <span class="mobile-checkout-count" id="mobileBarCartCount">0 item</span>
+            <span class="mobile-checkout-total" id="mobileBarTotal">Rp 0</span>
+          </div>
+          <button class="btn btn-primary mobile-checkout-btn" onclick="switchMobilePosTab('checkout')">
+            <i data-lucide="arrow-right"></i>
+            <span>Bayar</span>
+          </button>
         </div>
       </section>
 

@@ -203,20 +203,21 @@ function toggleMobileSidebar() {
 function switchMobilePosTab(tab) {
   const mainCol = document.querySelector('.pos-main');
   const sidebarCol = document.querySelector('.pos-sidebar');
-  const btnCart = document.querySelector('.mobile-pos-tab-btn:nth-child(1)');
-  const btnCheckout = document.querySelector('.mobile-pos-tab-btn:nth-child(2)');
+  const checkoutBar = document.getElementById('mobileCheckoutBar');
 
-  if (!mainCol || !sidebarCol || !btnCart || !btnCheckout) return;
+  if (!mainCol || !sidebarCol) return;
 
   if (tab === 'cart') {
-    btnCart.classList.add('active');
-    btnCheckout.classList.remove('active');
+    // Show cart, hide checkout
     mainCol.classList.remove('mobile-hidden');
-    sidebarCol.classList.add('mobile-hidden');
+    sidebarCol.classList.remove('mobile-visible');
+    sidebarCol.style.display = ''; // Reset to CSS default (hidden by media query)
+    if (checkoutBar) checkoutBar.style.display = '';
   } else {
-    btnCart.classList.remove('active');
-    btnCheckout.classList.add('active');
+    // Show checkout, hide cart
     mainCol.classList.add('mobile-hidden');
-    sidebarCol.classList.remove('mobile-hidden');
+    sidebarCol.classList.add('mobile-visible');
+    sidebarCol.style.display = 'block';
+    if (checkoutBar) checkoutBar.style.display = 'none'; // Hide bar when on checkout page
   }
 }
