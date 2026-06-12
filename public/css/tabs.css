@@ -1,6 +1,7 @@
 /* Sub-Tab Layout for Reports */
 .sub-tabs {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   border-bottom: 1px solid var(--border-color);
   margin-bottom: 24px;

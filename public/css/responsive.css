@@ -129,3 +129,222 @@
     gap: 12px;
   }
 }
+
+/* ==================== TAMBAHAN REFAKTORISASI MOBIL & TABLET ==================== */
+
+/* Tombol Hamburger Menu (Sembunyikan default di desktop) */
+.btn-menu-toggle {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--text-main);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.btn-menu-toggle:hover {
+  background-color: var(--color-border);
+}
+
+.btn-menu-toggle i {
+  width: 24px;
+  height: 24px;
+}
+
+/* Penyesuaian untuk HP & Perangkat Kecil (< 768px) */
+@media (max-width: 768px) {
+  /* Tampilkan tombol menu */
+  .btn-menu-toggle {
+    display: flex !important;
+  }
+  
+  /* Sembunyikan sidebar ke kiri (Drawer mode) */
+  .app-sidebar {
+    position: fixed !important;
+    top: 0;
+    left: -260px;
+    width: 260px !important;
+    height: 100vh !important;
+    z-index: 10000 !important;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: var(--shadow-lg) !important;
+    display: flex !important;
+  }
+  
+  /* Slide in sidebar */
+  .app-sidebar.sidebar-open {
+    left: 0 !important;
+  }
+  
+  /* Tampilkan kembali text menu di mode drawer */
+  .sidebar-brand .brand-text,
+  .menu-item span,
+  .sidebar-footer .theme-toggle span {
+    display: inline !important;
+  }
+  
+  .sidebar-menu {
+    padding: 20px 16px !important;
+    align-items: stretch !important;
+  }
+  
+  .menu-item {
+    padding: 12px 16px !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+  
+  .sidebar-footer {
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+  }
+  
+  .theme-toggle {
+    width: 100% !important;
+    height: auto !important;
+    padding: 10px 14px !important;
+    justify-content: flex-start !important;
+    border: 1px solid var(--border-color) !important;
+  }
+  
+  /* Hilangkan margin kiri konten karena sidebar disembunyikan */
+  .app-content {
+    margin-left: 0 !important;
+    padding: 12px !important;
+  }
+  
+  /* Header Layout untuk Mobile */
+  .app-header {
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 12px 0 !important;
+    gap: 8px !important;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 16px;
+  }
+  
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  
+  .header-left h2 {
+    font-size: 18px !important;
+    margin: 0 !important;
+  }
+  
+  #screenDescription {
+    display: none !important; /* Sembunyikan deskripsi panjang di HP */
+  }
+  
+  .header-clock {
+    display: none !important; /* Sembunyikan jam di HP untuk kurangi clutter */
+  }
+  
+  .cashier-selector {
+    padding: 6px 10px !important;
+  }
+  
+  .cashier-info label {
+    display: none !important; /* Sembunyikan label text di HP */
+  }
+
+  /* Overlay Background untuk Sidebar Mobile */
+  .sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(5, 8, 16, 0.4);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    display: none;
+    animation: fadeIn var(--transition-fast);
+  }
+  
+  .sidebar-overlay.active {
+    display: block;
+  }
+
+  /* Penyesuaian Modals di HP */
+  .modal-card {
+    width: 95% !important;
+    max-width: 450px !important;
+    margin: 12px !important;
+    border-radius: var(--radius-md) !important;
+  }
+  
+  /* Table Responsiveness di semua halaman */
+  .table-card, 
+  .cart-table-wrapper, 
+  .modal-body {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Form Filter Laporan / Pencarian menjadi Stack Vertikal */
+  .pos-search-panel, 
+  .filter-row,
+  .form-row,
+  .products-header-actions,
+  .filter-dates,
+  .backup-actions {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+  
+  .pos-search-panel input, 
+  .pos-search-panel button,
+  .filter-row select,
+  .filter-row input,
+  .filter-row button,
+  .products-header-actions button,
+  .products-header-actions input,
+  .products-header-actions .search-input-wrapper,
+  .filter-dates input,
+  .filter-dates button,
+  .backup-actions button {
+    width: 100% !important;
+    margin: 0 !important;
+  }
+  
+  .quick-dates {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+  }
+
+  /* Grid Produk di Katalog / Opname agar muat di HP */
+  .catalog-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .form-actions-row {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .form-actions-row button {
+    width: 100% !important;
+  }
+}
+
+/* Extra small viewport optimizations */
+@media (max-width: 576px) {
+  .metrics-grid {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}

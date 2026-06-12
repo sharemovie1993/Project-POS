@@ -3,6 +3,14 @@
  */
 
 function switchScreen(screenId) {
+  // Tutup mobile sidebar/overlay saat berpindah halaman
+  const sidebar = document.getElementById('appSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar && overlay) {
+    sidebar.classList.remove('sidebar-open');
+    overlay.classList.remove('active');
+  }
+
   // Jika level kasir mencoba masuk area terlarang, paksa ke POS
   if (currentUser && currentUser.role === 'cashier' && screenId !== 'pos') {
     screenId = 'pos';
@@ -176,4 +184,14 @@ function startClock() {
   };
   update();
   setInterval(update, 1000);
+}
+
+// Toggle mobile drawer sidebar
+function toggleMobileSidebar() {
+  const sidebar = document.getElementById('appSidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar && overlay) {
+    sidebar.classList.toggle('sidebar-open');
+    overlay.classList.toggle('active');
+  }
 }

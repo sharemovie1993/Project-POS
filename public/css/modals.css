@@ -30,8 +30,9 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-.modal-sm { width: 360px; }
-.modal-md { width: 500px; }
+.modal-sm { width: 100%; max-width: 360px; }
+.modal-md { width: 100%; max-width: 500px; }
+.modal-lg { width: 100%; max-width: 800px; }
 
 .modal-header {
   padding: 20px;
