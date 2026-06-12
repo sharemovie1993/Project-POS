@@ -412,6 +412,7 @@
   .data-table {
     display: block !important;
     width: 100% !important;
+    min-width: 0 !important; /* Reset tablet min-width */
   }
   
   .data-table thead {
@@ -496,6 +497,7 @@
   .pos-cart-card .cart-table {
     display: block !important;
     width: 100% !important;
+    min-width: 0 !important; /* Reset tablet min-width */
     border: none !important;
   }
   
