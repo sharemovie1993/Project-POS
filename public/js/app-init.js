@@ -51,10 +51,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ==================== UNIVERSAL TABLE VIEW TOGGLER ====================
 
+// Fungsi pemetaan judul header tabel berdasarkan ID
+function formatHeaderTitle(tableId) {
+  const titles = {
+    productCatalogTable: 'Daftar Barang',
+    stockEntryTable: 'Riwayat Restok (Barang Masuk)',
+    categoryTable: 'Daftar Kategori',
+    userCatalogTable: 'Daftar Akun Kasir',
+    ownerCatalogTable: 'Daftar Pemilik Barang (Owner)',
+    opnameCartTable: 'Daftar Audit Fisik Barang',
+    opnameHistoryTable: 'Daftar Riwayat Audit Opname',
+    todayTransactionsTable: 'Daftar Transaksi Hari Ini',
+    opnameDetailTable: 'Detail Dokumen Audit Opname'
+  };
+  return titles[tableId] || 'Daftar Data';
+}
+
 // Fungsi untuk menyuntikkan tombol toggle pada setiap table-card
 function addUniversalTableViewToggles() {
   document.querySelectorAll('.table-card').forEach((card, index) => {
-    const header = card.querySelector('.card-header');
+    let header = card.querySelector('.card-header');
     const table = card.querySelector('table.data-table');
     
     // Jangan tambahkan toggle di keranjang POS atau kartu backup
@@ -62,44 +78,55 @@ function addUniversalTableViewToggles() {
       return;
     }
     
-    if (header && table && !header.querySelector('.btn-toggle-view')) {
-      const toggleBtn = document.createElement('button');
-      toggleBtn.className = 'btn btn-secondary btn-xs btn-toggle-view';
-      toggleBtn.style.marginLeft = 'auto';
-      toggleBtn.style.padding = '4px 8px';
-      toggleBtn.style.fontSize = '11px';
-      toggleBtn.style.display = 'flex';
-      toggleBtn.style.alignItems = 'center';
-      toggleBtn.style.gap = '4px';
-      toggleBtn.setAttribute('title', 'Ubah Tampilan (Tabel/Kartu)');
-      
-      // Menggunakan ID tabel atau index unik sebagai key localStorage
-      const tableId = table.id || `table_mode_${index}`;
-      const cardKey = `view_mode_${tableId}`;
-      const savedMode = localStorage.getItem(cardKey) || 'table';
-      
-      if (savedMode === 'card') {
-        card.classList.add('view-cards');
+    if (table) {
+      // Jika card-header belum ada di dalam table-card, buat baru secara dinamis
+      if (!header) {
+        header = document.createElement('div');
+        header.className = 'card-header';
+        const titleText = formatHeaderTitle(table.id);
+        header.innerHTML = `<h3>${titleText}</h3>`;
+        card.insertBefore(header, card.firstChild);
       }
       
-      const updateButtonState = () => {
-        const isCards = card.classList.contains('view-cards');
-        toggleBtn.innerHTML = isCards 
-          ? `<i data-lucide="list" style="width:12px;height:12px;"></i> Tampilan Tabel` 
-          : `<i data-lucide="layout-grid" style="width:12px;height:12px;"></i> Tampilan Kartu`;
-        if (window.lucide) window.lucide.createIcons();
-      };
-      
-      toggleBtn.onclick = (e) => {
-        e.preventDefault();
-        card.classList.toggle('view-cards');
-        const isCards = card.classList.contains('view-cards');
-        localStorage.setItem(cardKey, isCards ? 'card' : 'table');
+      if (!header.querySelector('.btn-toggle-view')) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'btn btn-secondary btn-xs btn-toggle-view';
+        toggleBtn.style.marginLeft = 'auto';
+        toggleBtn.style.padding = '4px 8px';
+        toggleBtn.style.fontSize = '11px';
+        toggleBtn.style.display = 'flex';
+        toggleBtn.style.alignItems = 'center';
+        toggleBtn.style.gap = '4px';
+        toggleBtn.setAttribute('title', 'Ubah Tampilan (Tabel/Kartu)');
+        
+        // Menggunakan ID tabel atau index unik sebagai key localStorage
+        const tableId = table.id || `table_mode_${index}`;
+        const cardKey = `view_mode_${tableId}`;
+        const savedMode = localStorage.getItem(cardKey) || 'table';
+        
+        if (savedMode === 'card') {
+          card.classList.add('view-cards');
+        }
+        
+        const updateButtonState = () => {
+          const isCards = card.classList.contains('view-cards');
+          toggleBtn.innerHTML = isCards 
+            ? `<i data-lucide="list" style="width:12px;height:12px;"></i> Tampilan Tabel` 
+            : `<i data-lucide="layout-grid" style="width:12px;height:12px;"></i> Tampilan Kartu`;
+          if (window.lucide) window.lucide.createIcons();
+        };
+        
+        toggleBtn.onclick = (e) => {
+          e.preventDefault();
+          card.classList.toggle('view-cards');
+          const isCards = card.classList.contains('view-cards');
+          localStorage.setItem(cardKey, isCards ? 'card' : 'table');
+          updateButtonState();
+        };
+        
+        header.appendChild(toggleBtn);
         updateButtonState();
-      };
-      
-      header.appendChild(toggleBtn);
-      updateButtonState();
+      }
     }
   });
 }
