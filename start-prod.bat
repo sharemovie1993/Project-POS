@@ -48,8 +48,9 @@ if %ERRORLEVEL%==0 (
 echo [2/3] Port %PORT% sudah bebas.
 
 :: -------------------------------------------------------
-:: LANGKAH 3: Jalankan server production
+:: LANGKAH 3: Jalankan server production (Looping Auto-Restart)
 :: -------------------------------------------------------
+:RUN_SERVER
 echo [3/3] Memulai server production...
 echo.
 echo ===================================================
@@ -61,4 +62,10 @@ echo.
 set NODE_ENV=production
 node server.js
 
-pause
+echo.
+echo ===================================================
+echo   [INFO] Server dihentikan (kemungkinan karena update).
+echo   Memulai ulang server secara otomatis dalam 3 detik...
+echo ===================================================
+timeout /t 3 /nobreak >nul
+goto RUN_SERVER

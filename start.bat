@@ -56,21 +56,15 @@ if %ERRORLEVEL%==0 (
   goto WAIT_LOOP
 )
 
-:: Menjalankan server di background
+:: Menjalankan server kasir lokal (dengan looping auto-restart)
 echo [INFO] Menjalankan server kasir lokal (Port %PORT%)...
-set NODE_ENV=production
-start "" /b node server.js
 
-:: Tunggu 2 detik untuk memastikan server sudah aktif
-echo [INFO] Membuka antarmuka kasir di browser Anda...
-timeout /t 2 /nobreak >nul
-
-:: Buka browser ke alamat localhost
-start http://localhost:%PORT%
+:: Jalankan timer untuk membuka browser secara terpisah agar tidak memblokir server
+start "" cmd /c "timeout /t 2 /nobreak >nul && start http://localhost:%PORT%"
 
 echo.
 echo =======================================================
-echo  Aplikasi Kasirku POS sudah berjalan di:
+echo  Aplikasi Kasirku POS akan berjalan di:
 echo  http://localhost:%PORT%
 echo.
 echo  PENTING: Jangan tutup jendela hitam ini selama
@@ -78,5 +72,14 @@ echo  menggunakan aplikasi Kasirku POS!
 echo =======================================================
 echo.
 
-:: Menjaga agar CMD tetap aktif untuk menampilkan logs server
-cmd /k
+:RUN_SERVER
+set NODE_ENV=production
+node server.js
+
+echo.
+echo ===================================================
+echo   [INFO] Server dihentikan (kemungkinan karena update).
+echo   Memulai ulang server secara otomatis dalam 3 detik...
+echo ===================================================
+timeout /t 3 /nobreak >nul
+goto RUN_SERVER
