@@ -299,7 +299,7 @@
   .pos-sidebar {
     min-width: 0 !important;
     max-width: 100% !important;
-    padding-bottom: 40px !important;
+    padding-bottom: 100px !important;
   }
 
   /* Show mobile floating checkout bar */
