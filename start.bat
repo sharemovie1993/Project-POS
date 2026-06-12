@@ -1,5 +1,12 @@
 @echo off
-title Menjalankan Aplikasi Kasirku POS Lokal (PRODUCTION)
+cd /d "%~dp0"
+
+:: Ambil Port dari .env.production jika ada
+set PORT=
+for /f "tokens=2 delims==" %%i in ('findstr /i "^PORT=" .env.production 2^>nul') do set PORT=%%i
+if "%PORT%"=="" set PORT=3000
+
+title Menjalankan Aplikasi Kasirku POS Lokal (PRODUCTION - Port %PORT%)
 color 0a
 
 echo =======================================================
@@ -19,9 +26,6 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-:: Pindah ke folder script berjalan
-cd /d "%~dp0"
-
 :: Cek apakah folder node_modules sudah ada
 if not exist node_modules (
     echo [INFO] Menemukan dependensi belum terinstal.
@@ -30,8 +34,7 @@ if not exist node_modules (
     echo.
 )
 
-:: Matikan proses yang memakai port 3000
-set PORT=3000
+:: Matikan proses yang memakai port %PORT%
 echo [INFO] Memeriksa port %PORT%...
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%PORT% " ^| findstr "LISTENING" 2^>nul') do (
   echo [INFO] Port %PORT% sedang dipakai oleh PID %%a - menghentikan...

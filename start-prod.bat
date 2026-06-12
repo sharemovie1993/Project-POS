@@ -1,20 +1,26 @@
 @echo off
-title Kasirku POS - MODE PRODUCTION (Port 3000)
+cd /d "%~dp0"
+
+:: Ambil Port dari .env.production jika ada
+set PORT=
+for /f "tokens=2 delims==" %%i in ('findstr /i "^PORT=" .env.production 2^>nul') do set PORT=%%i
+if "%PORT%"=="" set PORT=3000
+
+title Kasirku POS - MODE PRODUCTION (Port %PORT%)
 color 0F
 
 echo.
 echo ===================================================
 echo   KASIRKU POS ^| MODE PRODUCTION
-echo   URL      : http://localhost:3000
+echo   URL      : http://localhost:%PORT%
 echo   Database : kasir.db (DATA ASLI TOKO!)
 echo ===================================================
 echo.
 
 :: -------------------------------------------------------
-:: LANGKAH 1: Matikan proses yang sedang pakai port 3000
+:: LANGKAH 1: Matikan proses yang sedang pakai port %PORT%
 :: -------------------------------------------------------
-echo [1/3] Memeriksa port 3000...
-set PORT=3000
+echo [1/3] Memeriksa port %PORT%...
 
 for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":%PORT% " ^| findstr "LISTENING" 2^>nul') do (
   echo [1/3] Port %PORT% sedang dipakai oleh PID %%a - menghentikan...
@@ -47,7 +53,7 @@ echo [2/3] Port %PORT% sudah bebas.
 echo [3/3] Memulai server production...
 echo.
 echo ===================================================
-echo   SERVER BERJALAN: http://localhost:3000
+echo   SERVER BERJALAN: http://localhost:%PORT%
 echo   Tekan Ctrl+C untuk menghentikan.
 echo ===================================================
 echo.
