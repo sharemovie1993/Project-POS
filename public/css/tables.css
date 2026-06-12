@@ -75,3 +75,112 @@
 .stock-safe { background-color: var(--color-success); }
 .stock-warning { background-color: var(--color-warning); }
 .stock-empty { background-color: var(--color-danger); }
+
+/* ==================== UNIVERSAL VIEW CARDS LAYOUT TRANSFORMATION ==================== */
+.table-card.view-cards {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+.table-card.view-cards .card-header {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  margin-bottom: 16px !important;
+}
+
+.table-card.view-cards .data-table {
+  display: block !important;
+  width: 100% !important;
+}
+
+.table-card.view-cards .data-table thead {
+  display: none !important; /* Sembunyikan header kolom */
+}
+
+.table-card.view-cards .data-table tbody {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
+  gap: 16px !important;
+  padding: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.table-card.view-cards .data-table tr {
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 16px !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all 0.2s ease !important;
+  position: relative !important;
+  gap: 8px !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+}
+
+.table-card.view-cards .data-table tr:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.table-card.view-cards .data-table td {
+  display: block !important;
+  padding: 0 !important;
+  border-bottom: none !important;
+  text-align: left !important;
+  font-size: 13px !important;
+  color: var(--text-main) !important;
+}
+
+/* Sembunyikan baris kosong (empty-cart-row dll) dari bentuk grid atau biarkan melebar 100% */
+.table-card.view-cards .data-table tr:only-child:has(.empty-cart-icon),
+.table-card.view-cards .data-table tr[class*="empty-"] {
+  grid-column: 1 / -1 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+  padding: 32px !important;
+}
+
+/* Atribut data-label untuk memberi label tiap field pada kartu */
+.table-card.view-cards .data-table td[data-label]::before {
+  content: attr(data-label) ": ";
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Sembunyikan kolom nomor (No) jika berada di cell pertama */
+.table-card.view-cards .data-table td:first-child:not([data-label]),
+.table-card.view-cards .data-table td:first-child[data-label*="No"] {
+  display: none !important;
+}
+
+/* Penyesuaian khusus tombol aksi di dasar kartu */
+.table-card.view-cards .data-table td:last-child {
+  display: flex !important;
+  gap: 8px !important;
+  margin-top: auto !important;
+  border-top: 1px solid var(--border-color) !important;
+  padding-top: 12px !important;
+  width: 100% !important;
+}
+
+.table-card.view-cards .data-table td:last-child::before {
+  content: "" !important; /* Hilangkan prefix label "Aksi: " */
+}
+
+.table-card.view-cards .data-table td:last-child button,
+.table-card.view-cards .data-table td:last-child a,
+.table-card.view-cards .data-table td:last-child .btn {
+  flex: 1 !important;
+  justify-content: center !important;
+  padding: 8px !important;
+  font-size: 12px !important;
+}
