@@ -519,11 +519,10 @@
   .pos-cart-card .cart-table tr {
     display: grid !important;
     grid-template-areas:
-      "product product delete"
-      "price qty qty"
-      "discount discount subtotal" !important;
-    grid-template-columns: 1.1fr 1.1fr 60px !important;
-    gap: 10px 8px !important;
+      "product qty delete"
+      "price price subtotal" !important;
+    grid-template-columns: 1.5fr auto 1.2fr !important;
+    gap: 12px 8px !important;
     padding: 14px 16px !important;
     position: relative !important;
     border: 1px solid var(--border-color) !important;
@@ -601,52 +600,31 @@
     font-size: 11px !important;
   }
 
-  /* Qty Cell */
+  /* Qty Cell (Jumlah label on top, control on bottom) */
   .pos-cart-card.view-cards .cart-table td:nth-child(4),
   .pos-cart-card .cart-table td:nth-child(4) {
     grid-area: qty !important;
     display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 6px !important;
+    justify-content: center !important;
+    gap: 4px !important;
   }
 
   .pos-cart-card.view-cards .cart-table td:nth-child(4)::before,
   .pos-cart-card .cart-table td:nth-child(4)::before {
-    content: "Jumlah: " !important;
-    display: inline !important;
+    content: "Jumlah" !important;
+    display: block !important;
     font-weight: 600 !important;
     color: var(--text-muted) !important;
     font-size: 11px !important;
+    text-align: center !important;
   }
 
-  /* Discount Cell */
+  /* Discount Cell (Hidden) */
   .pos-cart-card.view-cards .cart-table td:nth-child(5),
   .pos-cart-card .cart-table td:nth-child(5) {
-    grid-area: discount !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-  }
-
-  .pos-cart-card.view-cards .cart-table td:nth-child(5)::before,
-  .pos-cart-card .cart-table td:nth-child(5)::before {
-    content: "Diskon (Rp): " !important;
-    display: inline !important;
-    font-weight: 600 !important;
-    color: var(--text-muted) !important;
-    font-size: 11px !important;
-  }
-
-  .pos-cart-card.view-cards .cart-table td:nth-child(5) input,
-  .pos-cart-card .cart-table td:nth-child(5) input {
-    width: 70px !important;
-    max-width: 70px !important;
-    text-align: right !important;
-    padding: 4px 8px !important;
-    height: 28px !important;
-    font-size: 12px !important;
-    border-radius: var(--radius-sm) !important;
+    display: none !important;
   }
 
   /* Subtotal Cell */
@@ -680,10 +658,8 @@
   .pos-cart-card .cart-table td:nth-child(7) {
     grid-area: delete !important;
     display: flex !important;
-    align-items: flex-start !important;
+    align-items: center !important;
     justify-content: flex-end !important;
-    border-top: none !important;
-    padding-top: 0 !important;
   }
 
   .pos-cart-card.view-cards .cart-table td:nth-child(7) button,
