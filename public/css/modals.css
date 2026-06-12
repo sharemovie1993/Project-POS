@@ -120,7 +120,7 @@
   background: radial-gradient(circle at 15% 15%, var(--color-primary-glow) 0%, transparent 35%),
               radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.06) 0%, transparent 35%),
               var(--bg-app) !important;
-  display: flex !important;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: 16px;
