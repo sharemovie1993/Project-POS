@@ -114,3 +114,135 @@
   50% { top: 90%; }
   100% { top: 10%; }
 }
+
+/* ==================== LOGIN SCREEN STYLES (RESPONSIVE & PREMIUM) ==================== */
+#loginOverlay {
+  background: radial-gradient(circle at 15% 15%, var(--color-primary-glow) 0%, transparent 35%),
+              radial-gradient(circle at 85% 85%, rgba(244, 63, 94, 0.06) 0%, transparent 35%),
+              var(--bg-app) !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100000 !important;
+}
+
+#loginOverlay .modal-card {
+  width: 100% !important;
+  max-width: 420px !important;
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12) !important;
+  overflow: hidden !important;
+  animation: loginCardFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+@keyframes loginCardFadeIn {
+  from {
+    transform: translateY(20px) scale(0.97);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+#loginOverlay .login-logo-header {
+  padding: 40px 32px 16px 32px !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#loginOverlay #loginLogoWrapper i {
+  width: 56px !important;
+  height: 56px !important;
+  padding: 12px !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 12px var(--color-primary-glow);
+  transition: transform 0.3s ease;
+}
+
+#loginOverlay #loginLogoWrapper img {
+  max-height: 70px !important;
+  max-width: 180px !important;
+  object-fit: contain !important;
+  transition: transform 0.3s ease;
+}
+
+#loginOverlay #loginLogoWrapper i:hover,
+#loginOverlay #loginLogoWrapper img:hover {
+  transform: scale(1.08) rotate(3deg);
+}
+
+#loginOverlay #loginStoreName {
+  font-size: 24px !important;
+  font-weight: 850 !important;
+  margin-top: 12px;
+}
+
+#loginOverlay .modal-body {
+  padding: 0 32px 40px 32px !important;
+}
+
+#loginOverlay .form-group label {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 8px !important;
+  display: block;
+}
+
+#loginOverlay .form-group input {
+  width: 100% !important;
+  padding: 12px 16px !important;
+  font-size: 14px !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 8px !important;
+  background-color: rgba(0, 0, 0, 0.01) !important;
+  color: var(--text-main) !important;
+  transition: all 0.25s ease !important;
+}
+
+#loginOverlay .form-group input:focus {
+  background-color: var(--bg-card) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 3px var(--color-primary-glow) !important;
+  outline: none !important;
+}
+
+#loginOverlay .btn-primary {
+  padding: 14px !important;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px var(--color-primary-glow);
+  transition: all 0.2s ease !important;
+}
+
+#loginOverlay .btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--color-primary-glow);
+}
+
+#loginOverlay .btn-primary:active {
+  transform: translateY(1px);
+}
+
+/* Penyesuaian responsif layar kecil (Mobile bawah 480px) */
+@media (max-width: 480px) {
+  #loginOverlay {
+    padding: 12px;
+  }
+  #loginOverlay .modal-card {
+    border-radius: 12px !important;
+  }
+  #loginOverlay .login-logo-header {
+    padding: 32px 20px 12px 20px !important;
+  }
+  #loginOverlay .modal-body {
+    padding: 0 20px 32px 20px !important;
+  }
+}
