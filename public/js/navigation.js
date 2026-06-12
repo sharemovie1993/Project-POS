@@ -212,12 +212,17 @@ function switchMobilePosTab(tab) {
     mainCol.classList.remove('mobile-hidden');
     sidebarCol.classList.remove('mobile-visible');
     sidebarCol.style.display = ''; // Reset to CSS default (hidden by media query)
-    if (checkoutBar) checkoutBar.style.display = '';
+    if (checkoutBar) {
+      checkoutBar.style.display = '';
+      checkoutBar.classList.remove('hidden');
+    }
   } else {
     // Show checkout, hide cart
     mainCol.classList.add('mobile-hidden');
     sidebarCol.classList.add('mobile-visible');
     sidebarCol.style.display = 'block';
-    if (checkoutBar) checkoutBar.style.display = 'none'; // Hide bar when on checkout page
-  }
+    if (checkoutBar) {
+      checkoutBar.style.display = 'none';
+      checkoutBar.classList.add('hidden'); // Paksa sembunyikan dengan display: none !important
+    }
 }

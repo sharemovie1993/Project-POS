@@ -481,6 +481,11 @@ function printReceipt() {
 function closeReceiptPreview() {
   document.getElementById('receiptPreviewModal').classList.add('hidden');
   activeTransactionReceipt = null;
+  
+  if (typeof switchMobilePosTab === 'function') {
+    switchMobilePosTab('cart');
+  }
+
   // Kembalikan fokus ke kolom barcode untuk transaksi berikutnya
   if (activeScreen === 'pos') {
     document.getElementById('barcodeSearchInput').focus();
