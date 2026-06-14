@@ -38,7 +38,9 @@ async function fetchTodayTransactions() {
         return;
       }
 
-      tbody.innerHTML = transactions.map((t, idx) => {
+      let totalSales = 0;
+      const rowsHtml = transactions.map((t, idx) => {
+        totalSales += t.total_amount;
         const timeStr = new Date(t.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
         return `
           <tr>
@@ -60,6 +62,14 @@ async function fetchTodayTransactions() {
           </tr>
         `;
       }).join('');
+
+      tbody.innerHTML = rowsHtml + `
+        <tr style="background-color: var(--color-primary-glow); font-weight: bold; border-top: 2px solid var(--color-primary);">
+          <td colspan="3" class="text-left">TOTAL PENDAPATAN</td>
+          <td class="text-right font-mono font-bold text-sm text-primary">Rp ${formatRupiah(totalSales)}</td>
+          <td colspan="2"></td>
+        </tr>
+      `;
       lucide.createIcons();
     } else {
       tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-danger text-xs">Gagal mengambil data dari server.</td></tr>`;
