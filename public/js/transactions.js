@@ -1,6 +1,14 @@
 function openTodayTransactionsModal() {
   if (!currentUser) return;
   document.getElementById('todayTxCashierName').innerText = currentUser.name;
+  
+  // Set default dates to today
+  const today = new Date().toISOString().split('T')[0];
+  const startInput = document.getElementById('todayTxStartDate');
+  const endInput = document.getElementById('todayTxEndDate');
+  if (startInput) startInput.value = today;
+  if (endInput) endInput.value = today;
+  
   document.getElementById('todayTransactionsModal').classList.remove('hidden');
   fetchTodayTransactions();
 }
@@ -15,12 +23,18 @@ async function fetchTodayTransactions() {
   tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted text-xs">Memuat data...</td></tr>`;
 
   try {
-    const today = new Date().toISOString().slice(0, 10);
-    const response = await fetch(`${API_URL}/api/transactions?date=${today}&cashier=${encodeURIComponent(currentUser.name)}`);
+    const startDate = document.getElementById('todayTxStartDate') ? document.getElementById('todayTxStartDate').value : '';
+    const endDate = document.getElementById('todayTxEndDate') ? document.getElementById('todayTxEndDate').value : '';
+    
+    let url = `${API_URL}/api/transactions?cashier=${encodeURIComponent(currentUser.name)}`;
+    if (startDate) url += `&startDate=${startDate}`;
+    if (endDate) url += `&endDate=${endDate}`;
+    
+    const response = await fetch(url);
     if (response.ok) {
       const transactions = await response.json();
       if (transactions.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted text-xs">Belum ada transaksi hari ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted text-xs">Tidak ditemukan transaksi pada periode ini.</td></tr>`;
         return;
       }
 

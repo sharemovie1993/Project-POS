@@ -208,10 +208,10 @@ router.post('/api/transactions', (req, res) => {
   });
 });
 
-// Ambil riwayat transaksi (mendukung filter tanggal dan nama kasir)
+// Ambil riwayat transaksi (mendukung filter tanggal, rentang tanggal, dan nama kasir)
 router.get('/api/transactions', async (req, res) => {
   try {
-    const { date, cashier } = req.query;
+    const { date, cashier, startDate, endDate } = req.query;
     let sql = 'SELECT * FROM transactions';
     let params = [];
     let conditions = [];
@@ -219,6 +219,15 @@ router.get('/api/transactions', async (req, res) => {
     if (date) {
       conditions.push("date(created_at, 'localtime') = ?");
       params.push(date);
+    } else {
+      if (startDate) {
+        conditions.push("date(created_at, 'localtime') >= ?");
+        params.push(startDate);
+      }
+      if (endDate) {
+        conditions.push("date(created_at, 'localtime') <= ?");
+        params.push(endDate);
+      }
     }
     if (cashier) {
       conditions.push('cashier_name = ?');

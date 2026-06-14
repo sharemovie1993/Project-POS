@@ -1369,10 +1369,25 @@
   <div class="modal-backdrop hidden" id="todayTransactionsModal">
     <div class="modal-card modal-lg">
       <div class="modal-header">
-        <h3><i data-lucide="history" class="mr-2"></i> Transaksi Hari Ini (<span id="todayTxCashierName">Kasir</span>)</h3>
+        <h3><i data-lucide="history" class="mr-2"></i> Riwayat Transaksi Kasir (<span id="todayTxCashierName">Kasir</span>)</h3>
         <button class="btn-close" onclick="closeTodayTransactionsModal()"><i data-lucide="x"></i></button>
       </div>
       <div class="modal-body" style="max-height: 450px; overflow-y: auto;">
+        <!-- Filter Rentang Tanggal -->
+        <div style="display: flex; gap: 8px; align-items: flex-end; background: rgba(0,0,0,0.02); padding: 12px; border-radius: 8px; border: 1px solid var(--color-border); flex-wrap: wrap; margin-bottom: 15px;">
+          <div style="flex: 1; min-width: 120px;">
+            <label style="font-size: 11px; margin-bottom: 4px; display: block; font-weight: 600; color: var(--color-text-muted);">Dari Tanggal</label>
+            <input type="date" id="todayTxStartDate" style="padding: 6px 10px; font-size: 13px; border-radius: 6px; border: 1px solid var(--color-border); width: 100%; height: 32px; font-family: inherit;">
+          </div>
+          <div style="flex: 1; min-width: 120px;">
+            <label style="font-size: 11px; margin-bottom: 4px; display: block; font-weight: 600; color: var(--color-text-muted);">Sampai Tanggal</label>
+            <input type="date" id="todayTxEndDate" style="padding: 6px 10px; font-size: 13px; border-radius: 6px; border: 1px solid var(--color-border); width: 100%; height: 32px; font-family: inherit;">
+          </div>
+          <button class="btn btn-primary" onclick="fetchTodayTransactions()" style="padding: 6px 16px; font-size: 12px; border-radius: 6px; height: 32px; display: flex; align-items: center; gap: 4px; font-weight: 600;">
+            <i data-lucide="filter" style="width: 14px; height: 14px;"></i> Filter
+          </button>
+        </div>
+
         <table class="data-table">
           <thead>
             <tr>
