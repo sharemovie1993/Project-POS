@@ -2,8 +2,9 @@ function openTodayTransactionsModal() {
   if (!currentUser) return;
   document.getElementById('todayTxCashierName').innerText = currentUser.name;
   
-  // Set default dates to today
-  const today = new Date().toISOString().split('T')[0];
+  // Set default dates to today (local timezone)
+  const tzOffset = new Date().getTimezoneOffset() * 60000;
+  const today = new Date(Date.now() - tzOffset).toISOString().split('T')[0];
   const startInput = document.getElementById('todayTxStartDate');
   const endInput = document.getElementById('todayTxEndDate');
   if (startInput) startInput.value = today;

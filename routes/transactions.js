@@ -212,6 +212,7 @@ router.post('/api/transactions', (req, res) => {
 router.get('/api/transactions', async (req, res) => {
   try {
     const { date, cashier, startDate, endDate, owner } = req.query;
+    console.log('[DEBUG] GET /api/transactions query:', { date, cashier, startDate, endDate, owner });
     const hasOwner = owner && owner !== 'All' && owner !== 'undefined' && owner !== 'null' && owner !== '';
     
     let sql;
