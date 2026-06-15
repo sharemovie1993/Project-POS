@@ -8,6 +8,15 @@ function openTodayTransactionsModal() {
   const endInput = document.getElementById('todayTxEndDate');
   if (startInput) startInput.value = today;
   if (endInput) endInput.value = today;
+
+  // Populate owners dropdown dynamically from dbOwners
+  const todayTxOwnerSelect = document.getElementById('todayTxOwner');
+  if (todayTxOwnerSelect) {
+    const defaultOption = '<option value="">Semua Owner</option>';
+    const optionsHTML = dbOwners.map(owner => `<option value="${owner.name}">${owner.name}</option>`).join('');
+    todayTxOwnerSelect.innerHTML = defaultOption + optionsHTML;
+    todayTxOwnerSelect.value = '';
+  }
   
   document.getElementById('todayTransactionsModal').classList.remove('hidden');
   fetchTodayTransactions();
@@ -25,10 +34,12 @@ async function fetchTodayTransactions() {
   try {
     const startDate = document.getElementById('todayTxStartDate') ? document.getElementById('todayTxStartDate').value : '';
     const endDate = document.getElementById('todayTxEndDate') ? document.getElementById('todayTxEndDate').value : '';
+    const owner = document.getElementById('todayTxOwner') ? document.getElementById('todayTxOwner').value : '';
     
     let url = `${API_URL}/api/transactions?cashier=${encodeURIComponent(currentUser.name)}`;
     if (startDate) url += `&startDate=${startDate}`;
     if (endDate) url += `&endDate=${endDate}`;
+    if (owner) url += `&owner=${encodeURIComponent(owner)}`;
     
     const response = await fetch(url);
     if (response.ok) {

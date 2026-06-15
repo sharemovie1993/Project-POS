@@ -208,37 +208,76 @@ router.post('/api/transactions', (req, res) => {
   });
 });
 
-// Ambil riwayat transaksi (mendukung filter tanggal, rentang tanggal, dan nama kasir)
+// Ambil riwayat transaksi (mendukung filter tanggal, rentang tanggal, nama kasir, dan owner)
 router.get('/api/transactions', async (req, res) => {
   try {
-    const { date, cashier, startDate, endDate } = req.query;
-    let sql = 'SELECT * FROM transactions';
+    const { date, cashier, startDate, endDate, owner } = req.query;
+    const hasOwner = owner && owner !== 'All' && owner !== 'undefined' && owner !== 'null' && owner !== '';
+    
+    let sql;
     let params = [];
     let conditions = [];
 
-    if (date) {
-      conditions.push("date(created_at, 'localtime') = ?");
-      params.push(date);
+    if (hasOwner) {
+      sql = `
+        SELECT t.id, t.invoice_number, t.cashier_name, t.payment_method, 
+               t.discount, t.tax, t.payment_amount, t.change_amount, 
+               t.customer_name, t.customer_id, t.payment_details, t.created_at,
+               SUM(ti.subtotal) AS total_amount
+        FROM transactions t
+        INNER JOIN transaction_items ti ON t.id = ti.transaction_id
+      `;
+      conditions.push('ti.product_owner = ?');
+      params.push(owner);
+      
+      if (date) {
+        conditions.push("date(t.created_at, 'localtime') = ?");
+        params.push(date);
+      } else {
+        if (startDate) {
+          conditions.push("date(t.created_at, 'localtime') >= ?");
+          params.push(startDate);
+        }
+        if (endDate) {
+          conditions.push("date(t.created_at, 'localtime') <= ?");
+          params.push(endDate);
+        }
+      }
+      if (cashier) {
+        conditions.push('t.cashier_name = ?');
+        params.push(cashier);
+      }
+      
+      if (conditions.length > 0) {
+        sql += ' WHERE ' + conditions.join(' AND ');
+      }
+      sql += ' GROUP BY t.id ORDER BY t.created_at DESC LIMIT 100';
     } else {
-      if (startDate) {
-        conditions.push("date(created_at, 'localtime') >= ?");
-        params.push(startDate);
+      sql = 'SELECT * FROM transactions';
+      if (date) {
+        conditions.push("date(created_at, 'localtime') = ?");
+        params.push(date);
+      } else {
+        if (startDate) {
+          conditions.push("date(created_at, 'localtime') >= ?");
+          params.push(startDate);
+        }
+        if (endDate) {
+          conditions.push("date(created_at, 'localtime') <= ?");
+          params.push(endDate);
+        }
       }
-      if (endDate) {
-        conditions.push("date(created_at, 'localtime') <= ?");
-        params.push(endDate);
+      if (cashier) {
+        conditions.push('cashier_name = ?');
+        params.push(cashier);
       }
-    }
-    if (cashier) {
-      conditions.push('cashier_name = ?');
-      params.push(cashier);
+      
+      if (conditions.length > 0) {
+        sql += ' WHERE ' + conditions.join(' AND ');
+      }
+      sql += ' ORDER BY created_at DESC LIMIT 100';
     }
 
-    if (conditions.length > 0) {
-      sql += ' WHERE ' + conditions.join(' AND ');
-    }
-
-    sql += ' ORDER BY created_at DESC LIMIT 100';
     const transactions = await dbAll(sql, params);
     res.json(transactions);
   } catch (error) {
