@@ -1,9 +1,15 @@
 // 1. LAPORAN HARI INI
 async function populateReportTodayFilters() {
-  const dateInput = document.getElementById('reportTodayDate');
-  if (dateInput && !dateInput.value) {
-    const tzOffset = new Date().getTimezoneOffset() * 60000;
-    dateInput.value = new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+  const startInput = document.getElementById('reportTodayStartDate');
+  const endInput = document.getElementById('reportTodayEndDate');
+  const tzOffset = new Date().getTimezoneOffset() * 60000;
+  const todayLocal = new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+
+  if (startInput && !startInput.value) {
+    startInput.value = todayLocal;
+  }
+  if (endInput && !endInput.value) {
+    endInput.value = todayLocal;
   }
 
   // Populate Cashier select
@@ -41,11 +47,12 @@ async function fetchTodayReport() {
   await populateReportTodayFilters();
 
   try {
-    const date = document.getElementById('reportTodayDate') ? document.getElementById('reportTodayDate').value : '';
+    const startDate = document.getElementById('reportTodayStartDate') ? document.getElementById('reportTodayStartDate').value : '';
+    const endDate = document.getElementById('reportTodayEndDate') ? document.getElementById('reportTodayEndDate').value : '';
     const cashier = document.getElementById('reportTodayCashier') ? document.getElementById('reportTodayCashier').value : '';
     const owner = document.getElementById('reportTodayOwner') ? document.getElementById('reportTodayOwner').value : '';
 
-    let url = `${API_URL}/api/reports/today?date=${date}`;
+    let url = `${API_URL}/api/reports/today?startDate=${startDate}&endDate=${endDate}`;
     if (cashier) url += `&cashier=${encodeURIComponent(cashier)}`;
     if (owner) url += `&owner=${encodeURIComponent(owner)}`;
 

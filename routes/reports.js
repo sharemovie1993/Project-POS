@@ -83,13 +83,22 @@ router.get('/api/dashboard/summary', async (req, res) => {
   }
 });
 
-// Laporan Penjualan Hari Ini (mendukung filter date, cashier, dan owner)
+// Laporan Penjualan Hari Ini (mendukung filter rentang tanggal, cashier, dan owner)
 router.get('/api/reports/today', async (req, res) => {
   try {
-    const { owner, date, cashier } = req.query;
+    const { owner, date, startDate, endDate, cashier } = req.query;
     const hasOwner = owner && owner !== 'All' && owner !== 'undefined' && owner !== 'null' && owner !== '';
     const hasCashier = cashier && cashier !== 'All' && cashier !== 'undefined' && cashier !== 'null' && cashier !== '';
-    const targetDate = date || getLocalTodayDate();
+    
+    // Fallback logic for date range
+    let start, end;
+    if (date) {
+      start = date;
+      end = date;
+    } else {
+      start = startDate || getLocalTodayDate();
+      end = endDate || getLocalTodayDate();
+    }
     
     let summary, profitData, soldItems, transactions;
 
@@ -102,9 +111,9 @@ router.get('/api/reports/today', async (req, res) => {
           0 as total_tax
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
-        WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
+        WHERE date(t.created_at, 'localtime') >= ? AND date(t.created_at, 'localtime') <= ? AND ti.product_owner = ?
       `;
-      let sumParams = [targetDate, owner];
+      let sumParams = [start, end, owner];
       if (hasCashier) {
         sumSql += ' AND t.cashier_name = ?';
         sumParams.push(cashier);
@@ -116,9 +125,9 @@ router.get('/api/reports/today', async (req, res) => {
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         LEFT JOIN products p ON ti.product_id = p.id
-        WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
+        WHERE date(t.created_at, 'localtime') >= ? AND date(t.created_at, 'localtime') <= ? AND ti.product_owner = ?
       `;
-      let profitParams = [targetDate, owner];
+      let profitParams = [start, end, owner];
       if (hasCashier) {
         profitSql += ' AND t.cashier_name = ?';
         profitParams.push(cashier);
@@ -133,9 +142,9 @@ router.get('/api/reports/today', async (req, res) => {
           SUM(ti.subtotal) as total_sales
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
-        WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
+        WHERE date(t.created_at, 'localtime') >= ? AND date(t.created_at, 'localtime') <= ? AND ti.product_owner = ?
       `;
-      let soldParams = [targetDate, owner];
+      let soldParams = [start, end, owner];
       if (hasCashier) {
         soldSql += ' AND t.cashier_name = ?';
         soldParams.push(cashier);
@@ -149,9 +158,9 @@ router.get('/api/reports/today', async (req, res) => {
                SUM(ti.subtotal) as payment_amount, 0 as change_amount, t.created_at
         FROM transactions t
         JOIN transaction_items ti ON ti.transaction_id = t.id
-        WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
+        WHERE date(t.created_at, 'localtime') >= ? AND date(t.created_at, 'localtime') <= ? AND ti.product_owner = ?
       `;
-      let txParams = [targetDate, owner];
+      let txParams = [start, end, owner];
       if (hasCashier) {
         txSql += ' AND t.cashier_name = ?';
         txParams.push(cashier);
@@ -167,9 +176,9 @@ router.get('/api/reports/today', async (req, res) => {
           SUM(discount) as total_discount,
           SUM(tax) as total_tax
         FROM transactions
-        WHERE date(created_at, 'localtime') = ?
+        WHERE date(created_at, 'localtime') >= ? AND date(created_at, 'localtime') <= ?
       `;
-      let sumParams = [targetDate];
+      let sumParams = [start, end];
       if (hasCashier) {
         sumSql += ' AND cashier_name = ?';
         sumParams.push(cashier);
@@ -181,9 +190,9 @@ router.get('/api/reports/today', async (req, res) => {
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         LEFT JOIN products p ON ti.product_id = p.id
-        WHERE date(t.created_at, 'localtime') = ?
+        WHERE date(t.created_at, 'localtime') >= ? AND date(t.created_at, 'localtime') <= ?
       `;
-      let profitParams = [targetDate];
+      let profitParams = [start, end];
       if (hasCashier) {
         profitSql += ' AND t.cashier_name = ?';
         profitParams.push(cashier);
@@ -198,9 +207,9 @@ router.get('/api/reports/today', async (req, res) => {
           SUM(subtotal) as total_sales
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
-        WHERE date(t.created_at, 'localtime') = ?
+        WHERE date(t.created_at, 'localtime') >= ? AND date(t.created_at, 'localtime') <= ?
       `;
-      let soldParams = [targetDate];
+      let soldParams = [start, end];
       if (hasCashier) {
         soldSql += ' AND t.cashier_name = ?';
         soldParams.push(cashier);
@@ -210,9 +219,9 @@ router.get('/api/reports/today', async (req, res) => {
 
       let txSql = `
         SELECT * FROM transactions 
-        WHERE date(created_at, 'localtime') = ?
+        WHERE date(created_at, 'localtime') >= ? AND date(created_at, 'localtime') <= ?
       `;
-      let txParams = [targetDate];
+      let txParams = [start, end];
       if (hasCashier) {
         txSql += ' AND cashier_name = ?';
         txParams.push(cashier);
@@ -222,7 +231,8 @@ router.get('/api/reports/today', async (req, res) => {
     }
 
     res.json({
-      date: targetDate,
+      startDate: start,
+      endDate: end,
       revenue: summary.total_revenue || 0,
       transactions_count: summary.total_transactions || 0,
       discount: summary.total_discount || 0,
