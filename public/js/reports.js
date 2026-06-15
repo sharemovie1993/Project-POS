@@ -1,7 +1,55 @@
 // 1. LAPORAN HARI INI
+async function populateReportTodayFilters() {
+  const dateInput = document.getElementById('reportTodayDate');
+  if (dateInput && !dateInput.value) {
+    const tzOffset = new Date().getTimezoneOffset() * 60000;
+    dateInput.value = new Date(Date.now() - tzOffset).toISOString().split('T')[0];
+  }
+
+  // Populate Cashier select
+  const cashierSelect = document.getElementById('reportTodayCashier');
+  if (cashierSelect && cashierSelect.children.length <= 1) {
+    if (dbUsers.length === 0) {
+      try {
+        const response = await fetch(`${API_URL}/api/users`);
+        if (response.ok) dbUsers = await response.json();
+      } catch (e) {
+        console.error('Failed to load users for report filter:', e);
+      }
+    }
+    const cashierOptions = dbUsers.map(u => `<option value="${u.name}">${u.name}</option>`).join('');
+    cashierSelect.innerHTML = '<option value="">Semua Kasir</option>' + cashierOptions;
+  }
+
+  // Populate Owner select
+  const ownerSelect = document.getElementById('reportTodayOwner');
+  if (ownerSelect && ownerSelect.children.length <= 1) {
+    if (dbOwners.length === 0) {
+      try {
+        const response = await fetch(`${API_URL}/api/owners`);
+        if (response.ok) dbOwners = await response.json();
+      } catch (e) {
+        console.error('Failed to load owners for report filter:', e);
+      }
+    }
+    const ownerOptions = dbOwners.map(o => `<option value="${o.name}">${o.name}</option>`).join('');
+    ownerSelect.innerHTML = '<option value="">Semua Owner</option>' + ownerOptions;
+  }
+}
+
 async function fetchTodayReport() {
+  await populateReportTodayFilters();
+
   try {
-    const response = await fetch(appendOwnerParam(`${API_URL}/api/reports/today`));
+    const date = document.getElementById('reportTodayDate') ? document.getElementById('reportTodayDate').value : '';
+    const cashier = document.getElementById('reportTodayCashier') ? document.getElementById('reportTodayCashier').value : '';
+    const owner = document.getElementById('reportTodayOwner') ? document.getElementById('reportTodayOwner').value : '';
+
+    let url = `${API_URL}/api/reports/today?date=${date}`;
+    if (cashier) url += `&cashier=${encodeURIComponent(cashier)}`;
+    if (owner) url += `&owner=${encodeURIComponent(owner)}`;
+
+    const response = await fetch(appendOwnerParam(url));
     if (response.ok) {
       const data = await response.json();
       

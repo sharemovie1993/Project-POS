@@ -83,17 +83,18 @@ router.get('/api/dashboard/summary', async (req, res) => {
   }
 });
 
-// Laporan Penjualan Hari Ini
+// Laporan Penjualan Hari Ini (mendukung filter date, cashier, dan owner)
 router.get('/api/reports/today', async (req, res) => {
   try {
-    const { owner } = req.query;
-    const hasOwner = owner && owner !== 'All' && owner !== 'undefined' && owner !== 'null';
-    const today = getLocalTodayDate();
+    const { owner, date, cashier } = req.query;
+    const hasOwner = owner && owner !== 'All' && owner !== 'undefined' && owner !== 'null' && owner !== '';
+    const hasCashier = cashier && cashier !== 'All' && cashier !== 'undefined' && cashier !== 'null' && cashier !== '';
+    const targetDate = date || getLocalTodayDate();
     
     let summary, profitData, soldItems, transactions;
 
     if (hasOwner) {
-      summary = await dbGet(`
+      let sumSql = `
         SELECT 
           SUM(ti.subtotal) as total_revenue,
           COUNT(DISTINCT ti.transaction_id) as total_transactions,
@@ -102,17 +103,29 @@ router.get('/api/reports/today', async (req, res) => {
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
-      `, [today, owner]);
+      `;
+      let sumParams = [targetDate, owner];
+      if (hasCashier) {
+        sumSql += ' AND t.cashier_name = ?';
+        sumParams.push(cashier);
+      }
+      summary = await dbGet(sumSql, sumParams);
 
-      profitData = await dbGet(`
+      let profitSql = `
         SELECT SUM((ti.price_sell - COALESCE(p.price_buy, ti.price_sell * 0.7)) * ti.quantity) as total_profit
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         LEFT JOIN products p ON ti.product_id = p.id
         WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
-      `, [today, owner]);
+      `;
+      let profitParams = [targetDate, owner];
+      if (hasCashier) {
+        profitSql += ' AND t.cashier_name = ?';
+        profitParams.push(cashier);
+      }
+      profitData = await dbGet(profitSql, profitParams);
 
-      soldItems = await dbAll(`
+      let soldSql = `
         SELECT 
           ti.product_name,
           SUM(ti.quantity) as qty_sold,
@@ -121,22 +134,33 @@ router.get('/api/reports/today', async (req, res) => {
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
-        GROUP BY ti.product_id, ti.product_name
-        ORDER BY qty_sold DESC
-      `, [today, owner]);
+      `;
+      let soldParams = [targetDate, owner];
+      if (hasCashier) {
+        soldSql += ' AND t.cashier_name = ?';
+        soldParams.push(cashier);
+      }
+      soldSql += ' GROUP BY ti.product_id, ti.product_name ORDER BY qty_sold DESC';
+      soldItems = await dbAll(soldSql, soldParams);
 
-      transactions = await dbAll(`
+      let txSql = `
         SELECT t.id, t.invoice_number, t.cashier_name, t.payment_method, 
                SUM(ti.subtotal) as total_amount, 0 as discount, 0 as tax, 
                SUM(ti.subtotal) as payment_amount, 0 as change_amount, t.created_at
         FROM transactions t
         JOIN transaction_items ti ON ti.transaction_id = t.id
         WHERE date(t.created_at, 'localtime') = ? AND ti.product_owner = ?
-        GROUP BY t.id
-        ORDER BY t.created_at DESC
-      `, [today, owner]);
+      `;
+      let txParams = [targetDate, owner];
+      if (hasCashier) {
+        txSql += ' AND t.cashier_name = ?';
+        txParams.push(cashier);
+      }
+      txSql += ' GROUP BY t.id ORDER BY t.created_at DESC';
+      transactions = await dbAll(txSql, txParams);
+      
     } else {
-      summary = await dbGet(`
+      let sumSql = `
         SELECT 
           SUM(total_amount) as total_revenue,
           COUNT(*) as total_transactions,
@@ -144,17 +168,29 @@ router.get('/api/reports/today', async (req, res) => {
           SUM(tax) as total_tax
         FROM transactions
         WHERE date(created_at, 'localtime') = ?
-      `, [today]);
+      `;
+      let sumParams = [targetDate];
+      if (hasCashier) {
+        sumSql += ' AND cashier_name = ?';
+        sumParams.push(cashier);
+      }
+      summary = await dbGet(sumSql, sumParams);
 
-      profitData = await dbGet(`
+      let profitSql = `
         SELECT SUM((ti.price_sell - COALESCE(p.price_buy, ti.price_sell * 0.7)) * ti.quantity) as total_profit
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         LEFT JOIN products p ON ti.product_id = p.id
         WHERE date(t.created_at, 'localtime') = ?
-      `, [today]);
+      `;
+      let profitParams = [targetDate];
+      if (hasCashier) {
+        profitSql += ' AND t.cashier_name = ?';
+        profitParams.push(cashier);
+      }
+      profitData = await dbGet(profitSql, profitParams);
 
-      soldItems = await dbAll(`
+      let soldSql = `
         SELECT 
           product_name,
           SUM(quantity) as qty_sold,
@@ -163,19 +199,30 @@ router.get('/api/reports/today', async (req, res) => {
         FROM transaction_items ti
         JOIN transactions t ON ti.transaction_id = t.id
         WHERE date(t.created_at, 'localtime') = ?
-        GROUP BY product_id, product_name
-        ORDER BY qty_sold DESC
-      `, [today]);
+      `;
+      let soldParams = [targetDate];
+      if (hasCashier) {
+        soldSql += ' AND t.cashier_name = ?';
+        soldParams.push(cashier);
+      }
+      soldSql += ' GROUP BY product_id, product_name ORDER BY qty_sold DESC';
+      soldItems = await dbAll(soldSql, soldParams);
 
-      transactions = await dbAll(`
+      let txSql = `
         SELECT * FROM transactions 
         WHERE date(created_at, 'localtime') = ?
-        ORDER BY created_at DESC
-      `, [today]);
+      `;
+      let txParams = [targetDate];
+      if (hasCashier) {
+        txSql += ' AND cashier_name = ?';
+        txParams.push(cashier);
+      }
+      txSql += ' ORDER BY created_at DESC';
+      transactions = await dbAll(txSql, txParams);
     }
 
     res.json({
-      date: today,
+      date: targetDate,
       revenue: summary.total_revenue || 0,
       transactions_count: summary.total_transactions || 0,
       discount: summary.total_discount || 0,
